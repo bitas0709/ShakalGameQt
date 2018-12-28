@@ -28,12 +28,13 @@ protected:
     bool win = false; //вывод текста о выигрыше на экран
     qint8 score = 0; //счёт игрока
     QString cheat; //строка для обработки ввода читов
+    int key; //код нажатой клавиши
 
 signals:
     void signalmove(QString key); //сигнал для перемещения игрока
 
 protected slots:
-    void movep(QString key); //слот для перемещения игрока
+    void movep(); //слот для перемещения игрока
 };
 
 #endif // MAINWINDOW_H

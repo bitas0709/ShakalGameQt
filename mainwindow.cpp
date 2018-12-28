@@ -3,8 +3,8 @@ MainWindow::MainWindow(QWidget *parent)
     : QGLWidget(parent)
 {
     QTimer *timer = new QTimer(this);
-    connect(this, SIGNAL(signalmove(QString)), this, SLOT(movep(QString)));
-    timer->start(2000);
+    connect(timer, SIGNAL(timeout()), this, SLOT(movep()));
+    timer->start(500);
 }
 
 void MainWindow::initializeGL() {
@@ -43,73 +43,82 @@ void MainWindow::mainp() {
     glEnd();
 }
 
-void MainWindow::movep(QString key) {
-    qDebug() << "Hehmda";
+void MainWindow::movep() {
+    //qDebug() << "Tick";
+    if (!win) {
+        switch(key) {
+        case 16777234: //Код нажатия на левую стрелку
+            if (x > 0) {
+                x -= 0.2;
+            }
+            break;
+        case 16777235: //Код нажатия на стелку вверх
+            if (y > 0.2) {
+                y -= 0.2;
+            }
+            break;
+        case 16777236: //Код нажатия на правую стрелку
+            if (x < windowWidth - 0.3) {
+                x += 0.2;
+            }
+            break;
+        case 16777237: //Код нажатия на клавишу вниз
+            if (y < windowHeight) {
+                y += 0.2;
+            }
+            break;
+        }
+    }
+    key = 0;
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
-    //qDebug() << "Hehmda";
-    int hehmda = 0;
     if (cheat.size() == 20) {
         cheat.remove(0, 10);
     }
     switch (event->key()) {
     case Qt::Key_Left:
-        hehmda = int(Qt::Key_Left);
-        qDebug() << "Left =" << hehmda;
-        //qDebug() << "Hehmda, LeftArrow";
-        if (x > 0) {
-            x -= 0.2;
-        }
+        key = int(event->key());
         break;
     case Qt::Key_Right:
-        qDebug() << "Hehmda, RightArrow";
-        if (x < windowWidth - 0.3) {
-            x += 0.2;
-        }
+        key = int(event->key());
         break;
     case Qt::Key_Up:
-        qDebug() << "Hehmda, UpArrow";
-        if (y > 0.2) {
-            y -= 0.2;
-        }
+        key = int(event->key());
         break;
     case Qt::Key_Down:
-        qDebug() << "Hehmda, DownArrow";
-        if (y < windowHeight) {
-            y += 0.2;
-        }
+        key = int(event->key());
         break;
     case Qt::Key_Space:
-        qDebug() << "Hehmda, SpaceBar";
+        //qDebug() << "SpaceBar";
         score++;
         break;
     case Qt::Key_E:
-        qDebug() << "Hehmda, E";
+        //qDebug() << "Hehmda, E";
         cheat.append("e");
         break;
     case Qt::Key_I:
-        qDebug() << "Hehmda, I";
+        //qDebug() << "Hehmda, I";
         cheat.append("i");
         break;
     case Qt::Key_L:
-        qDebug() << "Hehmda, L";
+        //qDebug() << "Hehmda, L";
         cheat.append("l");
         break;
     case Qt::Key_M:
-        qDebug() << "Hehmda, M";
+        //qDebug() << "Hehmda, M";
         cheat.append("m");
         break;
     case Qt::Key_N:
-        qDebug() << "Hehmda, N";
+        //qDebug() << "Hehmda, N";
         cheat.append("n");
         break;
     case Qt::Key_T:
-        qDebug() << "Hehmda, T";
+        //qDebug() << "Hehmda, T";
         cheat.append("t");
         break;
     case Qt::Key_W:
-        qDebug() << "Hehmda, W";
+        //qDebug() << "Hehmda, W";
         cheat.append("w");
         break;
     }

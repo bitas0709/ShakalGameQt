@@ -30,3 +30,8 @@ SOURCES += \
 
 HEADERS += \
         mainwindow.h
+
+DISTFILES +=
+
+RESOURCES += \
+    images.qrc
