@@ -2,9 +2,8 @@
 MainWindow::MainWindow(QWidget *parent)
     : QGLWidget(parent)
 {
-    QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(movep()));
-    timer->start(500);
+    timer->start(time);
 }
 
 void MainWindow::initializeGL() {
@@ -21,6 +20,56 @@ void MainWindow::resizeGL(int w, int h) {
 
 void MainWindow::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    /*glBegin(GL_POLYGON);
+    glColor3f(0.0, 1.0, 0.0);
+    glVertex2f(0.0, 0.0);
+    glVertex2f(windowWidth, 0.0);
+    glVertex2f(windowWidth, windowHeight);
+    glVertex2f(0.0, windowHeight);
+    glEnd();*/
+    for (float i = 0.0; i < windowHeight; i+=0.1) {
+        if(int(i*10)%2 == 0) {
+            for (float j = 0.0; j < windowWidth; j+=0.1) {
+                if(int(j*10)%2 == 0) {
+                    glBegin(GL_QUADS);
+                    glColor3f(0.0, 1.0, 0.0);
+                    glVertex2f(j, i);
+                    glVertex2f(j + 0.1, i);
+                    glVertex2f(j + 0.1, i + 0.1);
+                    glVertex2f(j, i + 0.1);
+                    glEnd();
+                } else {
+                    glBegin(GL_QUADS);
+                    glColor3f(0.0, 0.8, 0.0);
+                    glVertex2f(j, i);
+                    glVertex2f(j + 0.1, i);
+                    glVertex2f(j + 0.1, i + 0.1);
+                    glVertex2f(j, i + 0.1);
+                    glEnd();
+                }
+            }
+        } else {
+            for (float j = 0.0; j < windowWidth; j+=0.1) {
+                if(int(j*10)%2 == 0) {
+                    glBegin(GL_QUADS);
+                    glColor3f(0.0, 0.8, 0.0);
+                    glVertex2f(j, i);
+                    glVertex2f(j + 0.1, i);
+                    glVertex2f(j + 0.1, i + 0.1);
+                    glVertex2f(j, i + 0.1);
+                    glEnd();
+                } else {
+                    glBegin(GL_QUADS);
+                    glColor3f(0.0, 1.0, 0.0);
+                    glVertex2f(j, i);
+                    glVertex2f(j + 0.1, i);
+                    glVertex2f(j + 0.1, i + 0.1);
+                    glVertex2f(j, i + 0.1);
+                    glEnd();
+                }
+            }
+        }
+    }
     glColor3f(0.0, 0.0, 0.0);
     QGLWidget::renderText(7, windowHeight - 0.5 , 0, QString::fromUtf8("Вы набрали %1 очков:").arg(score), QFont());
     if (win) {
@@ -36,6 +85,7 @@ void MainWindow::mainp() {
     glVertex2d(x + 0.2, windowHeight - y + 0.2);
     glEnd();*/
     glBegin(GL_POLYGON);
+    glColor3f(0.0, 0.0, 0.0);
     glVertex2f(1 + x, 1 + y);
     glVertex2f(2 + x, 1 + y);
     glVertex2f(2 + x, 2 + y);
@@ -70,6 +120,7 @@ void MainWindow::movep() {
         }
     }
     key = 0;
+    QGLWidget::updateGL();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
@@ -90,43 +141,46 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
         key = int(event->key());
         break;
     case Qt::Key_Space:
-        //qDebug() << "SpaceBar";
         score++;
         break;
+    case Qt::Key_A:
+        cheat.append("a");
+        break;
     case Qt::Key_E:
-        //qDebug() << "Hehmda, E";
         cheat.append("e");
         break;
+    case Qt::Key_F:
+        cheat.append("f");
+        break;
     case Qt::Key_I:
-        //qDebug() << "Hehmda, I";
         cheat.append("i");
         break;
     case Qt::Key_L:
-        //qDebug() << "Hehmda, L";
         cheat.append("l");
         break;
     case Qt::Key_M:
-        //qDebug() << "Hehmda, M";
         cheat.append("m");
         break;
     case Qt::Key_N:
-        //qDebug() << "Hehmda, N";
         cheat.append("n");
         break;
+    case Qt::Key_S:
+        cheat.append("s");
+        break;
     case Qt::Key_T:
-        //qDebug() << "Hehmda, T";
         cheat.append("t");
         break;
     case Qt::Key_W:
-        //qDebug() << "Hehmda, W";
         cheat.append("w");
         break;
     }
     //qDebug() << "Cheat:" << cheat;
     if (cheat.indexOf("letmewin", 0) == 0) {
         win = true;
+    } else if (cheat.indexOf("fastfastfast", 0) == 0) {
+        time = 10;
+        timer->start(time);
     }
-    QGLWidget::updateGL();
 }
 
 /*MainWindow::~MainWindow()

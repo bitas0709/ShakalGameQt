@@ -28,7 +28,9 @@ protected:
     bool win = false; //вывод текста о выигрыше на экран
     qint8 score = 0; //счёт игрока
     QString cheat; //строка для обработки ввода читов
+    QTimer *timer = new QTimer(this);
     int key; //код нажатой клавиши
+    int time = 500; //скорость движения игрока
 
 signals:
     void signalmove(QString key); //сигнал для перемещения игрока
