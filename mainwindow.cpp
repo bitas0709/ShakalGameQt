@@ -20,60 +20,53 @@ void MainWindow::resizeGL(int w, int h) {
 
 void MainWindow::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    /*glBegin(GL_POLYGON);
-    glColor3f(0.0, 1.0, 0.0);
-    glVertex2f(0.0, 0.0);
-    glVertex2f(windowWidth, 0.0);
-    glVertex2f(windowWidth, windowHeight);
-    glVertex2f(0.0, windowHeight);
-    glEnd();*/
-    for (float i = 0.0; i < windowHeight; i+=0.1) {
-        if(int(i*10)%2 == 0) {
-            for (float j = 0.0; j < windowWidth; j+=0.1) {
-                if(int(j*10)%2 == 0) {
+    for (int i = 0; i < windowHeight; i++) {
+        if(i%2 == 0) {
+            for (int j = 0; j < windowWidth; j++) {
+                if(j%2 == 0) {
                     glBegin(GL_QUADS);
                     glColor3f(0.0, 1.0, 0.0);
                     glVertex2f(j, i);
-                    glVertex2f(j + 0.1, i);
-                    glVertex2f(j + 0.1, i + 0.1);
-                    glVertex2f(j, i + 0.1);
+                    glVertex2f(j + 1, i);
+                    glVertex2f(j + 1, i + 1);
+                    glVertex2f(j, i + 1);
                     glEnd();
                 } else {
                     glBegin(GL_QUADS);
                     glColor3f(0.0, 0.8, 0.0);
                     glVertex2f(j, i);
-                    glVertex2f(j + 0.1, i);
-                    glVertex2f(j + 0.1, i + 0.1);
-                    glVertex2f(j, i + 0.1);
+                    glVertex2f(j + 1, i);
+                    glVertex2f(j + 1, i + 1);
+                    glVertex2f(j, i + 1);
                     glEnd();
                 }
             }
         } else {
-            for (float j = 0.0; j < windowWidth; j+=0.1) {
-                if(int(j*10)%2 == 0) {
+            for (int j = 0; j < windowWidth; j++) {
+                if(j%2 == 0) {
                     glBegin(GL_QUADS);
                     glColor3f(0.0, 0.8, 0.0);
                     glVertex2f(j, i);
-                    glVertex2f(j + 0.1, i);
-                    glVertex2f(j + 0.1, i + 0.1);
-                    glVertex2f(j, i + 0.1);
+                    glVertex2f(j + 1, i);
+                    glVertex2f(j + 1, i + 1);
+                    glVertex2f(j, i + 1);
                     glEnd();
                 } else {
                     glBegin(GL_QUADS);
                     glColor3f(0.0, 1.0, 0.0);
                     glVertex2f(j, i);
-                    glVertex2f(j + 0.1, i);
-                    glVertex2f(j + 0.1, i + 0.1);
-                    glVertex2f(j, i + 0.1);
+                    glVertex2f(j + 1, i);
+                    glVertex2f(j + 1, i + 1);
+                    glVertex2f(j, i + 1);
                     glEnd();
                 }
             }
         }
     }
     glColor3f(0.0, 0.0, 0.0);
-    QGLWidget::renderText(7, windowHeight - 0.5 , 0, QString::fromUtf8("Вы набрали %1 очков:").arg(score), QFont());
+    QGLWidget::renderText(70, windowHeight - 5 , 0, QString::fromUtf8("Вы набрали %1 очков:").arg(score), QFont());
     if (win) {
-        QGLWidget::renderText(5, 5 , 0, QString::fromUtf8("Вы выиграли!"), QFont());
+        QGLWidget::renderText(50, 50 , 0, QString::fromUtf8("Вы выиграли!"), QFont());
     }
     mainp();
 }
@@ -86,10 +79,10 @@ void MainWindow::mainp() {
     glEnd();*/
     glBegin(GL_POLYGON);
     glColor3f(0.0, 0.0, 0.0);
-    glVertex2f(1 + x, 1 + y);
-    glVertex2f(2 + x, 1 + y);
-    glVertex2f(2 + x, 2 + y);
-    glVertex2f(1 + x, 2 + y);
+    glVertex2f(10 + x, 10 + y);
+    glVertex2f(20 + x, 10 + y);
+    glVertex2f(20 + x, 20 + y);
+    glVertex2f(10 + x, 20 + y);
     glEnd();
 }
 
@@ -99,22 +92,22 @@ void MainWindow::movep() {
         switch(key) {
         case 16777234: //Код нажатия на левую стрелку
             if (x > 0) {
-                x -= 0.2;
+                x -= 2;
             }
             break;
         case 16777235: //Код нажатия на стелку вверх
-            if (y > 0.2) {
-                y -= 0.2;
+            if (y > 2) {
+                y -= 2;
             }
             break;
         case 16777236: //Код нажатия на правую стрелку
-            if (x < windowWidth - 0.3) {
-                x += 0.2;
+            if (x < windowWidth - 3) {
+                x += 2;
             }
             break;
         case 16777237: //Код нажатия на клавишу вниз
             if (y < windowHeight) {
-                y += 0.2;
+                y += 2;
             }
             break;
         }
