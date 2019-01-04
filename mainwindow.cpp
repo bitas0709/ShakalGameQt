@@ -112,7 +112,6 @@ void MainWindow::movep() {
             break;
         }
     }
-    key = 0;
     QGLWidget::updateGL();
 }
 
@@ -120,59 +119,66 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
     if (cheat.size() == 20) {
         cheat.remove(0, 10);
     }
-    switch (event->key()) {
-    case Qt::Key_Left:
-        key = int(event->key());
-        break;
-    case Qt::Key_Right:
-        key = int(event->key());
-        break;
-    case Qt::Key_Up:
-        key = int(event->key());
-        break;
-    case Qt::Key_Down:
-        key = int(event->key());
-        break;
-    case Qt::Key_Space:
-        score++;
-        break;
-    case Qt::Key_A:
-        cheat.append("a");
-        break;
-    case Qt::Key_E:
-        cheat.append("e");
-        break;
-    case Qt::Key_F:
-        cheat.append("f");
-        break;
-    case Qt::Key_I:
-        cheat.append("i");
-        break;
-    case Qt::Key_L:
-        cheat.append("l");
-        break;
-    case Qt::Key_M:
-        cheat.append("m");
-        break;
-    case Qt::Key_N:
-        cheat.append("n");
-        break;
-    case Qt::Key_S:
-        cheat.append("s");
-        break;
-    case Qt::Key_T:
-        cheat.append("t");
-        break;
-    case Qt::Key_W:
-        cheat.append("w");
-        break;
+    if (!event->isAutoRepeat()) {
+        switch (event->key()) {
+        case Qt::Key_Left:
+            key = int(event->key());
+            break;
+        case Qt::Key_Right:
+            key = int(event->key());
+            break;
+        case Qt::Key_Up:
+            key = int(event->key());
+            break;
+        case Qt::Key_Down:
+            key = int(event->key());
+            break;
+        case Qt::Key_Space:
+            score++;
+            break;
+        case Qt::Key_A:
+            cheat.append("a");
+            break;
+        case Qt::Key_E:
+            cheat.append("e");
+            break;
+        case Qt::Key_F:
+            cheat.append("f");
+            break;
+        case Qt::Key_I:
+            cheat.append("i");
+            break;
+        case Qt::Key_L:
+            cheat.append("l");
+            break;
+        case Qt::Key_M:
+            cheat.append("m");
+            break;
+        case Qt::Key_N:
+            cheat.append("n");
+            break;
+        case Qt::Key_S:
+            cheat.append("s");
+            break;
+        case Qt::Key_T:
+            cheat.append("t");
+            break;
+        case Qt::Key_W:
+            cheat.append("w");
+            break;
+        }
     }
-    //qDebug() << "Cheat:" << cheat;
     if (cheat.indexOf("letmewin", 0) == 0) {
         win = true;
     } else if (cheat.indexOf("fastfastfast", 0) == 0) {
         time = 10;
         timer->start(time);
+    }
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent *event) {
+    if (!event->isAutoRepeat()) {
+        key = 0;
     }
 }
 

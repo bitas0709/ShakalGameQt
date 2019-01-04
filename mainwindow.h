@@ -25,6 +25,7 @@ protected:
     int windowWidth = 102, windowHeight = 102; //размеры окна x и y
     int borderX = 2, borderY = 2; //размер рамок
     virtual void keyPressEvent(QKeyEvent *event); //обработка событий клавиатуры
+    virtual void keyReleaseEvent(QKeyEvent *event);
     bool win = false; //вывод текста о выигрыше на экран
     qint8 score = 0; //счёт игрока
     QString cheat; //строка для обработки ввода читов
