@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
     MainWindow *w = new MainWindow;
     w->setWindowIcon(QIcon(":/resources/images/logo.png"));
     w->setWindowTitle("ShakalGame");
-    w->setFixedSize(600, 600);
+    w->setFixedSize(800, 600);
     w->show();
 
     return a.exec();

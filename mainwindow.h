@@ -20,13 +20,18 @@ protected:
     void initializeGL();
     void resizeGL(int w, int h);
     void paintGL();
-    void mainp(); //модель игрока
+    void drawBackground(); //отрисовка заднего фона игрового поля
+    void drawp(); //отрисовка модели игрока
+    void drawStat(); //отрисовка статистики игры
+    void drawWinMessage(); //отрисовка окна с сообщением о выигрыше
     int x = 0, y = 0; //стартовые координаты
-    int windowWidth = 102, windowHeight = 102; //размеры окна x и y
-    int borderX = 2, borderY = 2; //размер рамок
+    int playgroundWidth = 600, playgroundHeight = 600; //размеры игрового поля x и y
+    int windowWidth = playgroundWidth + 200, windowHeight = playgroundHeight; //размеры окна x и y
+    int borderX = 10, borderY = 10; //размер рамок
     virtual void keyPressEvent(QKeyEvent *event); //обработка событий клавиатуры
     virtual void keyReleaseEvent(QKeyEvent *event);
     bool win = false; //вывод текста о выигрыше на экран
+    QFont msgText(); //шрифт сообщений
     qint8 score = 0; //счёт игрока
     QString cheat; //строка для обработки ввода читов
     QTimer *timer = new QTimer(this);
