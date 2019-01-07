@@ -22,10 +22,10 @@ void MainWindow::resizeGL(int w, int h) {
 void MainWindow::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     drawBackground();
+    drawStat();
     if (win) {
         drawWinMessage();
     }
-    drawStat();
     drawp();
 }
 
@@ -55,6 +55,11 @@ void MainWindow::drawStat() {
 
     glColor3f(1.0, 1.0, 1.0);
     QGLWidget::renderText(playgroundWidth + 10, 30 , 0, QString::fromUtf8("Вы набрали %1 очков:").arg(score), QFont());
+    if (!win) {
+        if (score >= 100) {
+            win = true;
+        }
+    }
 }
 
 void MainWindow::drawWinMessage() {
@@ -72,49 +77,56 @@ void MainWindow::drawWinMessage() {
 }
 
 void MainWindow::drawBackground() {
-    //int blkSizeX = playgroundWidth / 100; //рассчёт размера пикселя заднего фона по X
-    //int blkSizeY = playgroundHeight / 100; //рассчёт размера пикселя заднего фона по Y
-    for (int i = 0; i < playgroundHeight; i++) {
-        if(iЩа%2 == 0) {
-            for (int j = 0; j < playgroundWidth; j++) {
-                if(j%2 == 0) {
+    int blkSizeX = playgroundWidth / 100; //рассчёт размера пикселя заднего фона по X
+    int blkSizeY = playgroundHeight / 100; //рассчёт размера пикселя заднего фона по Y
+    bool evenX = true, evenY = true; //проверка на чётность
+    for (int i = 0; i < playgroundHeight; i+=blkSizeY) {
+        if(evenY) {
+            for (int j = 0; j < playgroundWidth; j+=blkSizeX) {
+                if(evenX) {
                     glBegin(GL_QUADS);
                     glColor3f(0.0, 1.0, 0.0);
                     glVertex2f(j, i);
-                    glVertex2f(j + 1, i);
-                    glVertex2f(j + 1, i + 1);
-                    glVertex2f(j, i + 1);
+                    glVertex2f(j + blkSizeX, i);
+                    glVertex2f(j + blkSizeX, i + blkSizeY);
+                    glVertex2f(j, i + blkSizeY);
                     glEnd();
+                    evenX = false;
                 } else {
                     glBegin(GL_QUADS);
                     glColor3f(0.0, 0.8, 0.0);
                     glVertex2f(j, i);
-                    glVertex2f(j + 1, i);
-                    glVertex2f(j + 1, i + 1);
-                    glVertex2f(j, i + 1);
+                    glVertex2f(j + blkSizeX, i);
+                    glVertex2f(j + blkSizeX, i + blkSizeY);
+                    glVertex2f(j, i + blkSizeY);
                     glEnd();
+                    evenX = true;
                 }
             }
+            evenY = false;
         } else {
-            for (int j = 0; j < playgroundWidth; j++) {
-                if(j%2 == 0) {
+            for (int j = 0; j < playgroundWidth; j+=blkSizeX) {
+                if(evenX) {
                     glBegin(GL_QUADS);
                     glColor3f(0.0, 0.8, 0.0);
                     glVertex2f(j, i);
-                    glVertex2f(j + 1, i);
-                    glVertex2f(j + 1, i + 1);
-                    glVertex2f(j, i + 1);
+                    glVertex2f(j + blkSizeX, i);
+                    glVertex2f(j + blkSizeX, i + blkSizeY);
+                    glVertex2f(j, i + blkSizeX);
                     glEnd();
+                    evenX = false;
                 } else {
                     glBegin(GL_QUADS);
                     glColor3f(0.0, 1.0, 0.0);
                     glVertex2f(j, i);
-                    glVertex2f(j + 1, i);
-                    glVertex2f(j + 1, i + 1);
-                    glVertex2f(j, i + 1);
+                    glVertex2f(j + blkSizeX, i);
+                    glVertex2f(j + blkSizeX, i + blkSizeY);
+                    glVertex2f(j, i + blkSizeY);
                     glEnd();
+                    evenX = true;
                 }
             }
+            evenY = true;
         }
     }
 }
@@ -170,6 +182,15 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
             break;
         case Qt::Key_A:
             cheat.append("a");
+            break;
+        case Qt::Key_B:
+            cheat.append("b");
+            break;
+        case Qt::Key_C:
+            cheat.append("c");
+            break;
+        case Qt::Key_D:
+            cheat.append("d");
             break;
         case Qt::Key_E:
             cheat.append("e");
