@@ -24,6 +24,7 @@ protected:
     void drawp(); //отрисовка модели игрока
     void drawStat(); //отрисовка статистики игры
     void drawWinMessage(); //отрисовка окна с сообщением о выигрыше
+    void drawActivatedCheat(); //отрисовка окна о вводе чит-кода
     int x = 0, y = 0; //стартовые координаты
     int playgroundWidth = 600, playgroundHeight = 600; //размеры игрового поля x и y
     int windowWidth = playgroundWidth + 200, windowHeight = playgroundHeight; //размеры окна x и y
@@ -31,6 +32,7 @@ protected:
     virtual void keyPressEvent(QKeyEvent *event); //обработка событий клавиатуры
     virtual void keyReleaseEvent(QKeyEvent *event);
     bool win = false; //вывод текста о выигрыше на экран
+    bool actCheat = false;
     QFont msgText(); //шрифт сообщений
     qint8 score = 0; //счёт игрока
     QString cheat; //строка для обработки ввода читов

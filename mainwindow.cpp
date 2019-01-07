@@ -23,6 +23,9 @@ void MainWindow::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     drawBackground();
     drawStat();
+    if (actCheat) {
+        drawActivatedCheat();
+    }
     if (win) {
         drawWinMessage();
     }
@@ -74,6 +77,11 @@ void MainWindow::drawWinMessage() {
     glEnd();
     glColor3f(1.0, 1.0, 1.0);
     QGLWidget::renderText(centerX - 40, centerY + 5 , 0, QString::fromUtf8("Вы выиграли!"), QFont());
+}
+
+void MainWindow::drawActivatedCheat() {
+    glColor3f(1.0, 1.0, 1.0);
+    QGLWidget::renderText(playgroundWidth + 10, windowHeight - 30 , 0, QString::fromUtf8("Чит-код активирован!"), QFont());
 }
 
 void MainWindow::drawBackground() {
@@ -223,9 +231,11 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
     }
     if (cheat.indexOf("letmewin", 0) == 0) {
         win = true;
+        actCheat = true;
     } else if (cheat.indexOf("fastfastfast", 0) == 0) {
         time = 10;
         timer->start(time);
+        actCheat = true;
     }
 }
 
