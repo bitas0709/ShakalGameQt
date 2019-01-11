@@ -9,6 +9,5 @@ int main(int argc, char *argv[])
     w->setWindowTitle("ShakalGame");
     w->setFixedSize(800, 600);
     w->show();
-
     return a.exec();
 }

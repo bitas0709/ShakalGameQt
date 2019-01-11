@@ -48,6 +48,7 @@ protected:
     QTimer *timer = new QTimer(this);
     int time = 500; //скорость движения игрока
 
+    QFile settings; //файл с настройками игры
 signals:
     void signalmove(QString key); //сигнал для перемещения игрока
 

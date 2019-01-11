@@ -2,6 +2,33 @@
 MainWindow::MainWindow(QWidget *parent)
     : QGLWidget(parent)
 {
+    //систему работы с файлами нужно доработать для лучшей читаемости
+
+    /*settings.setFileName("settings.inf");
+    if (settings.exists()) {
+        if (!settings.open(QIODevice::ReadOnly)) {
+            qDebug() << "Ошибка чтения файла с настройками!";
+        } else {
+            QStringList settlist; //список переменных, полученных из файла
+            QStringList settval; //значения переменных, полученных из файла
+            while(!settings.atEnd()) {
+                QString line = settings.readLine(); //считывает строку из файла
+                QStringList list = line.split(" "); //разделение строки на слова, разделённые пробелом
+                settlist.append(list.at(0));
+                settval.append(list.at(2));
+            }
+            settlist.append("eof");
+            for(int i = 0; i < settlist.indexOf("eof"); i++) {
+                qDebug().noquote() << settlist.at(i) << "=" << settval.at(i);
+            }
+            switch(settlist.indexOf("eof")) {
+            case 0: //fullscreen
+            }
+        }
+    } else {
+        qDebug() << "Файл настроек не существует!";
+    }
+    settings.close();*/
     connect(timer, SIGNAL(timeout()), this, SLOT(movep()));
     timer->start(time);
 }
