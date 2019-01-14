@@ -7,6 +7,10 @@
 #include <QtOpenGL>
 #include <QDebug>
 #include <QString>
+#include <QSound>
+#include <QScreen>
+
+//QRect *screenRect = QApplication::screens().at(0)->geometry();      для считывания разрешения первого экрана, но это не точно
 
 class MainWindow : public QGLWidget
 {

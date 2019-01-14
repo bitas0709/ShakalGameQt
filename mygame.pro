@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui multimedia
 QT += opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -34,4 +34,5 @@ HEADERS += \
 DISTFILES +=
 
 RESOURCES += \
-    images.qrc
+    images.qrc \
+    music.qrc

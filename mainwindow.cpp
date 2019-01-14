@@ -233,8 +233,20 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
         case Qt::Key_F:
             cheat.append("f");
             break;
+        case Qt::Key_G:
+            cheat.append("g");
+            break;
+        case Qt::Key_H:
+            cheat.append("h");
+            break;
         case Qt::Key_I:
             cheat.append("i");
+            break;
+        case Qt::Key_J:
+            cheat.append("j");
+            break;
+        case Qt::Key_K:
+            cheat.append("k");
             break;
         case Qt::Key_L:
             cheat.append("l");
@@ -245,25 +257,62 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
         case Qt::Key_N:
             cheat.append("n");
             break;
+        case Qt::Key_O:
+            cheat.append("o");
+            break;
+        case Qt::Key_P:
+            cheat.append("p");
+            break;
+        case Qt::Key_Q:
+            cheat.append("q");
+            break;
+        case Qt::Key_R:
+            cheat.append("r");
+            break;
         case Qt::Key_S:
             cheat.append("s");
             break;
         case Qt::Key_T:
             cheat.append("t");
             break;
+        case Qt::Key_U:
+            cheat.append("u");
+            break;
+        case Qt::Key_V:
+            cheat.append("v");
+            break;
         case Qt::Key_W:
             cheat.append("w");
+            break;
+        case Qt::Key_X:
+            cheat.append("x");
+            break;
+        case Qt::Key_Y:
+            cheat.append("y");
+            break;
+        case Qt::Key_Z:
+            cheat.append("z");
             break;
         }
     }
     if (cheat.indexOf("letmewin", 0) == 0) {
         win = true;
         actCheat = true;
+        cheat.clear();
     } else if (cheat.indexOf("fastfastfast", 0) == 0) {
         time = 10;
         timer->start(time);
         actCheat = true;
+        cheat.clear();
+    } else if (cheat.indexOf("dragonforce", 0) == 0) {
+        actCheat = true;
+        time = 1;
+        timer->start(time);
+        //qDebug() << "DRAGONFORCE!!!";
+        QSound::play(":/resources/music/dragonforce.wav");
+        cheat.clear();
     }
+    qDebug().noquote() << "cheat =" << cheat;
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {

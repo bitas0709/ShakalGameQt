@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/music"/>
+    <qresource prefix="/">
+        <file>resources/music/dragonforce.wav</file>
+    </qresource>
+</RCC>
