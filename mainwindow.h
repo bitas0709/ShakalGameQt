@@ -25,7 +25,7 @@ class MainWindow : public QGLWidget
 
 public:
     MainWindow(QWidget *parent = 0);
-    //~MainWindow();
+    ~MainWindow();
 
 protected:
     void initializeGL();
@@ -46,9 +46,7 @@ protected:
 
     int x = 0, y = 0; //стартовые координаты модели игрока
     qint8 score = 0; //счёт игрока
-    QOpenGLTexture *texture; //текстура игрока
-    QOpenGLShaderProgram *program;
-    QOpenGLBuffer vbo;
+
 
     virtual void keyPressEvent(QKeyEvent *event); //обработка событий клавиатуры
     virtual void keyReleaseEvent(QKeyEvent *event);
@@ -63,6 +61,13 @@ protected:
     int time = 500; //скорость движения игрока
 
     QFile settings; //файл с настройками игры
+
+private:
+    void LoadPlayerTexture();
+    QOpenGLTexture *textures[1]; //текстура игрока
+    QOpenGLShaderProgram *program;
+    QOpenGLBuffer vbo;
+
 signals:
     void signalmove(QString key); //сигнал для перемещения игрока
 

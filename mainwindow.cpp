@@ -1,47 +1,19 @@
 #include "mainwindow.h"
+
 MainWindow::MainWindow(QWidget *parent)
     : QGLWidget(parent)
 {
-    //систему работы с файлами нужно доработать для лучшей читаемости
-
-    /*settings.setFileName("settings.inf");
-    if (settings.exists()) {
-        if (!settings.open(QIODevice::ReadOnly)) {
-            qDebug() << "Ошибка чтения файла с настройками!";
-        } else {
-            QStringList settlist; //список переменных, полученных из файла
-            QStringList settval; //значения переменных, полученных из файла
-            while(!settings.atEnd()) {
-                QString line = settings.readLine(); //считывает строку из файла
-                QStringList list = line.split(" "); //разделение строки на слова, разделённые пробелом
-                settlist.append(list.at(0));
-                settval.append(list.at(2));
-            }
-            settlist.append("eof");
-            for(int i = 0; i < settlist.indexOf("eof"); i++) {
-                qDebug().noquote() << settlist.at(i) << "=" << settval.at(i);
-            }
-            switch(settlist.indexOf("eof")) {
-            case 0: //fullscreen
-            }
-        }
-    } else {
-        qDebug() << "Файл настроек не существует!";
-    }
-    settings.close();*/
-    /*static const int coord[1][4][3] = {
-        { {10, 10, 0}, {20, 10, 0}, {20, 20, 0}, {10, 20, 0} }
-    };*/
+    memset(textures, 0, sizeof(textures));
     connect(timer, SIGNAL(timeout()), this, SLOT(movep()));
     timer->start(time);
 }
 
 void MainWindow::initializeGL() {
-    glClearColor(1.0, 1.0, 1.0, 1.0); //заливка всего окна белым фоном
+    glClearColor(1.0, 1.0, 1.0, 1.0); //заливка всего окна белым непрозрачным фоном
+    LoadPlayerTexture();
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glEnable(GL_DEPTH_TEST);
-    //glEnable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 
 #define PROGRAM_VERTEX_ATTRIBUTE 0
 #define PROGRAM_TEXCOORD_ATTRIBUTE 1
@@ -78,9 +50,6 @@ void MainWindow::initializeGL() {
 
     program->bind();
     program->setUniformValue("texture", 0);
-
-    texture = new QOpenGLTexture(QImage(":/resources/images/logo.png").mirrored());
-    QVector<GLfloat> vertData;
 }
 
 void MainWindow::resizeGL(int w, int h) {
@@ -91,9 +60,8 @@ void MainWindow::resizeGL(int w, int h) {
 }
 
 void MainWindow::paintGL() {
-    //glClearColor(clearColor.redF(), clearColor.greenF(), clearColor.blueF(), clearColor.alphaF());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    drawBackground();
+    /*drawBackground();
     drawStat();
     if (actCheat) {
         drawActivatedCheat();
@@ -102,7 +70,9 @@ void MainWindow::paintGL() {
         drawWinMessage();
     }
 
-    drawp();
+    drawp();*/
+    textures[0]->bind();
+    glDrawArrays(GL_TRIANGLE_FAN, 4, 4);
 }
 
 
@@ -111,9 +81,8 @@ void MainWindow::paintGL() {
 
 
 void MainWindow::drawp() {
-
     glBegin(GL_QUADS);
-    //glColor3f(0.0, 0.0, 0.0); //выбор чёрного цвета
+    glColor3f(0.0, 0.0, 0.0); //выбор чёрного цвета
     glVertex2f(10 + x, 10 + y); //левый верхний угол
     glVertex2f(20 + x, 10 + y); //правый верхний угол
     glVertex2f(20 + x, 20 + y); //правый нижний угол
@@ -167,7 +136,7 @@ void MainWindow::drawBackground() {
             for (int j = 0; j < playgroundWidth; j+=blkSizeX) {
                 if(evenX) {
                     glBegin(GL_QUADS);
-                    glColor3f(0.0, 1.0, 0.0);
+                    glColor3d(0.0, 1.0, 0.0);
                     glVertex2f(j, i);
                     glVertex2f(j + blkSizeX, i);
                     glVertex2f(j + blkSizeX, i + blkSizeY);
@@ -176,7 +145,7 @@ void MainWindow::drawBackground() {
                     evenX = false;
                 } else {
                     glBegin(GL_QUADS);
-                    glColor3f(0.0, 0.8, 0.0);
+                    glColor3d(0.0, 0.8, 0.0);
                     glVertex2f(j, i);
                     glVertex2f(j + blkSizeX, i);
                     glVertex2f(j + blkSizeX, i + blkSizeY);
@@ -190,7 +159,7 @@ void MainWindow::drawBackground() {
             for (int j = 0; j < playgroundWidth; j+=blkSizeX) {
                 if(evenX) {
                     glBegin(GL_QUADS);
-                    glColor3f(0.0, 0.8, 0.0);
+                    glColor3d(0.0, 0.8, 0.0);
                     glVertex2f(j, i);
                     glVertex2f(j + blkSizeX, i);
                     glVertex2f(j + blkSizeX, i + blkSizeY);
@@ -373,7 +342,61 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
     }
 }
 
-/*MainWindow::~MainWindow()
-{
+void MainWindow::LoadPlayerTexture() {
+    static const int coords[4][3] = {
+        { 10, 10, 0 }, { 20, 10, 0}, { 20, 20, 0}, { 10, 20, 0}
+    };
 
-}*/
+    textures[0] = new QOpenGLTexture(QImage(":/resources/images/logo.png").mirrored());
+
+    QVector<GLfloat> vertData;
+    for(int i = 0; i < 4; ++i) {
+        for(int j = 0; j < 3; ++j) {
+            vertData.append(0.2 * coords[i][j]);
+            vertData.append(j == 0 || j == 3);
+            vertData.append(j == 0 || j == 1);
+        }
+    }
+
+    vbo.create();
+    vbo.bind();
+    vbo.allocate(vertData.constData(), vertData.count() * sizeof(GLfloat));
+}
+
+MainWindow::~MainWindow()
+{
+    makeCurrent();
+    //здесь должно быть удаление текстур
+    doneCurrent();
+}
+
+//систему работы с файлами нужно доработать для лучшей читаемости
+
+/*settings.setFileName("settings.inf");
+if (settings.exists()) {
+    if (!settings.open(QIODevice::ReadOnly)) {
+        qDebug() << "Ошибка чтения файла с настройками!";
+    } else {
+        QStringList settlist; //список переменных, полученных из файла
+        QStringList settval; //значения переменных, полученных из файла
+        while(!settings.atEnd()) {
+            QString line = settings.readLine(); //считывает строку из файла
+            QStringList list = line.split(" "); //разделение строки на слова, разделённые пробелом
+            settlist.append(list.at(0));
+            settval.append(list.at(2));
+        }
+        settlist.append("eof");
+        for(int i = 0; i < settlist.indexOf("eof"); i++) {
+            qDebug().noquote() << settlist.at(i) << "=" << settval.at(i);
+        }
+        switch(settlist.indexOf("eof")) {
+        case 0: //fullscreen
+        }
+    }
+} else {
+    qDebug() << "Файл настроек не существует!";
+}
+settings.close();*/
+/*static const int coord[1][4][3] = {
+    { {10, 10, 0}, {20, 10, 0}, {20, 20, 0}, {10, 20, 0} }
+};*/
