@@ -29,6 +29,9 @@ MainWindow::MainWindow(QWidget *parent)
         qDebug() << "Файл настроек не существует!";
     }
     settings.close();*/
+    /*static const int coord[1][4][3] = {
+        { {10, 10, 0}, {20, 10, 0}, {20, 20, 0}, {10, 20, 0} }
+    };*/
     connect(timer, SIGNAL(timeout()), this, SLOT(movep()));
     timer->start(time);
 }
@@ -37,6 +40,47 @@ void MainWindow::initializeGL() {
     glClearColor(1.0, 1.0, 1.0, 1.0); //заливка всего окна белым фоном
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_CULL_FACE);
+
+#define PROGRAM_VERTEX_ATTRIBUTE 0
+#define PROGRAM_TEXCOORD_ATTRIBUTE 1
+
+    QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
+    const char *vsrc =
+        "attribute highp vec4 vertex;\n"
+        "attribute mediump vec4 texCoord;\n"
+        "varying mediump vec4 texc;\n"
+        "uniform mediump mat4 matrix;\n"
+        "void main(void)\n"
+        "{\n"
+        "    gl_Position = matrix * vertex;\n"
+        "    texc = texCoord;\n"
+        "}\n";
+    vshader->compileSourceCode(vsrc);
+
+    QOpenGLShader *fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
+    const char *fsrc =
+        "uniform sampler2D texture;\n"
+        "varying mediump vec4 texc;\n"
+        "void main(void)\n"
+        "{\n"
+        "    gl_FragColor = texture2D(texture, texc.st);\n"
+        "}\n";
+    fshader->compileSourceCode(fsrc);
+
+    program = new QOpenGLShaderProgram;
+    program->addShader(vshader);
+    program->addShader(fshader);
+    program->bindAttributeLocation("vertex", PROGRAM_VERTEX_ATTRIBUTE);
+    program->bindAttributeLocation("texCoord", PROGRAM_TEXCOORD_ATTRIBUTE);
+    program->link();
+
+    program->bind();
+    program->setUniformValue("texture", 0);
+
+    texture = new QOpenGLTexture(QImage(":/resources/images/logo.png").mirrored());
+    QVector<GLfloat> vertData;
 }
 
 void MainWindow::resizeGL(int w, int h) {
@@ -47,6 +91,7 @@ void MainWindow::resizeGL(int w, int h) {
 }
 
 void MainWindow::paintGL() {
+    //glClearColor(clearColor.redF(), clearColor.greenF(), clearColor.blueF(), clearColor.alphaF());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     drawBackground();
     drawStat();
@@ -56,6 +101,7 @@ void MainWindow::paintGL() {
     if (win) {
         drawWinMessage();
     }
+
     drawp();
 }
 
@@ -65,8 +111,9 @@ void MainWindow::paintGL() {
 
 
 void MainWindow::drawp() {
-    glBegin(GL_POLYGON);
-    glColor3f(0.0, 0.0, 0.0); //выбор чёрного цвета
+
+    glBegin(GL_QUADS);
+    //glColor3f(0.0, 0.0, 0.0); //выбор чёрного цвета
     glVertex2f(10 + x, 10 + y); //левый верхний угол
     glVertex2f(20 + x, 10 + y); //правый верхний угол
     glVertex2f(20 + x, 20 + y); //правый нижний угол
@@ -201,15 +248,19 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
     if (!event->isAutoRepeat()) {
         switch (event->key()) {
         case Qt::Key_Left:
+            //timer->start(time);
             key = int(event->key());
             break;
         case Qt::Key_Right:
+            //timer->start(time);
             key = int(event->key());
             break;
         case Qt::Key_Up:
+            //timer->start(time);
             key = int(event->key());
             break;
         case Qt::Key_Down:
+            //timer->start(time);
             key = int(event->key());
             break;
         case Qt::Key_Space:
@@ -312,11 +363,12 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
         QSound::play(":/resources/music/dragonforce.wav");
         cheat.clear();
     }
-    qDebug().noquote() << "cheat =" << cheat;
+    //qDebug().noquote() << "cheat =" << cheat;
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
     if (!event->isAutoRepeat()) {
+        //timer->stop();
         key = 0;
     }
 }

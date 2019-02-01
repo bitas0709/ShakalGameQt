@@ -9,6 +9,13 @@
 #include <QString>
 #include <QSound>
 #include <QScreen>
+#include <QOpenGLTexture>
+
+#include "enemy.h"
+#include "player.h"
+
+QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
+QT_FORWARD_DECLARE_CLASS(QOpenGLTexture)
 
 //QRect *screenRect = QApplication::screens().at(0)->geometry();      для считывания разрешения первого экрана, но это не точно
 
@@ -39,6 +46,9 @@ protected:
 
     int x = 0, y = 0; //стартовые координаты модели игрока
     qint8 score = 0; //счёт игрока
+    QOpenGLTexture *texture; //текстура игрока
+    QOpenGLShaderProgram *program;
+    QOpenGLBuffer vbo;
 
     virtual void keyPressEvent(QKeyEvent *event); //обработка событий клавиатуры
     virtual void keyReleaseEvent(QKeyEvent *event);
