@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::initializeGL() {
     glClearColor(1.0, 1.0, 1.0, 1.0); //заливка всего окна белым непрозрачным фоном
     LoadPlayerTexture();
-    glEnable(GL_BLEND);
+    //glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
@@ -53,26 +53,42 @@ void MainWindow::initializeGL() {
 }
 
 void MainWindow::resizeGL(int w, int h) {
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0, windowWidth, windowHeight, 0.0, 1.0, 0.0); //задание размеров всего окна
-    glViewport(0, 0, (GLint)w, (GLint)h);
+    //glMatrixMode(GL_PROJECTION);
+    //glLoadIdentity();
+    //glOrtho(0.0, windowWidth, windowHeight, 0.0, 1.0, 0.0); //задание размеров всего окна
+    //glViewport(0, 0, (GLint)w, (GLint)h);
+    int side = qMin(w, h);
+    glViewport((w - side) / 2, (h - side) / 2, side, side);
 }
 
 void MainWindow::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    /*drawBackground();
-    drawStat();
-    if (actCheat) {
-        drawActivatedCheat();
-    }
-    if (win) {
-        drawWinMessage();
-    }
+//    drawBackground();
+//    drawStat();
+//    if (actCheat) {
+//        drawActivatedCheat();
+//    }
+//    if (win) {
+//        drawWinMessage();
+//    }
 
-    drawp();*/
-    textures[0]->bind();
-    glDrawArrays(GL_TRIANGLE_FAN, 4, 4);
+//    drawp();
+    QMatrix4x4 m;
+    m.ortho(-0.5f, +0.5f, +0.5f, -0.5f, 4.0f, 15.0f);
+    m.translate(0.0f, 0.0f, -10.0f);
+
+    program->setUniformValue("matrix", m);
+    program->enableAttributeArray(PROGRAM_VERTEX_ATTRIBUTE);
+    program->enableAttributeArray(PROGRAM_TEXCOORD_ATTRIBUTE);
+    program->setAttributeBuffer(PROGRAM_VERTEX_ATTRIBUTE, GL_FLOAT, 0, 3, 5 * sizeof(GLfloat));
+    program->setAttributeBuffer(PROGRAM_TEXCOORD_ATTRIBUTE, GL_FLOAT, 3 * sizeof(GLfloat), 2, 5 * sizeof(GLfloat));
+
+    for (int i = 0; i < 6; ++i) {
+        textures[i]->bind();
+        glDrawArrays(GL_TRIANGLE_FAN, i * 4, 4);
+    }
+//    textures[0]->bind();
+//    glDrawArrays(GL_TRIANGLE_FAN, 3, 3);
 }
 
 
@@ -343,16 +359,26 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
 }
 
 void MainWindow::LoadPlayerTexture() {
-    static const int coords[4][3] = {
-        { 10, 10, 0 }, { 20, 10, 0}, { 20, 20, 0}, { 10, 20, 0}
+    static const int coords[6][4][3] = {
+        { { +1, -1, -1 }, { -1, -1, -1 }, { -1, +1, -1 }, { +1, +1, -1 } },
+        { { +1, +1, -1 }, { -1, +1, -1 }, { -1, +1, +1 }, { +1, +1, +1 } },
+        { { +1, -1, +1 }, { +1, -1, -1 }, { +1, +1, -1 }, { +1, +1, +1 } },
+        { { -1, -1, -1 }, { -1, -1, +1 }, { -1, +1, +1 }, { -1, +1, -1 } },
+        { { +1, -1, +1 }, { -1, -1, +1 }, { -1, -1, -1 }, { +1, -1, -1 } },
+        { { -1, -1, +1 }, { +1, -1, +1 }, { +1, +1, +1 }, { -1, +1, +1 } }
     };
 
-    textures[0] = new QOpenGLTexture(QImage(":/resources/images/logo.png").mirrored());
+    for (int j = 0; j < 6; ++j)
+        textures[j] = new QOpenGLTexture(QImage(":/resources/images/logo.png").mirrored());
 
     QVector<GLfloat> vertData;
-    for(int i = 0; i < 4; ++i) {
-        for(int j = 0; j < 3; ++j) {
-            vertData.append(0.2 * coords[i][j]);
+    for (int i = 0; i < 6; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            // vertex position
+            vertData.append(0.2 * coords[i][j][0]);
+            vertData.append(0.2 * coords[i][j][1]);
+            vertData.append(0.2 * coords[i][j][2]);
+            // texture coordinate
             vertData.append(j == 0 || j == 3);
             vertData.append(j == 0 || j == 1);
         }
@@ -365,9 +391,9 @@ void MainWindow::LoadPlayerTexture() {
 
 MainWindow::~MainWindow()
 {
-    makeCurrent();
-    //здесь должно быть удаление текстур
-    doneCurrent();
+//    makeCurrent();
+//    здесь должно быть удаление текстур
+//    doneCurrent();
 }
 
 //систему работы с файлами нужно доработать для лучшей читаемости

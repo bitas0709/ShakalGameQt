@@ -29,13 +29,15 @@ SOURCES += \
         mainwindow.cpp \
     player.cpp \
     unit.cpp \
-    enemy.cpp
+    enemy.cpp \
+    item.cpp
 
 HEADERS += \
         mainwindow.h \
     player.h \
     unit.h \
-    enemy.h
+    enemy.h \
+    item.h
 
 DISTFILES +=
 
