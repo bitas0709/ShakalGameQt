@@ -3,92 +3,67 @@
 MainWindow::MainWindow(QWidget *parent)
     : QGLWidget(parent)
 {
-    memset(textures, 0, sizeof(textures));
     connect(timer, SIGNAL(timeout()), this, SLOT(movep()));
     timer->start(time);
 }
 
 void MainWindow::initializeGL() {
     glClearColor(1.0, 1.0, 1.0, 1.0); //заливка всего окна белым непрозрачным фоном
-    LoadPlayerTexture();
-    //glEnable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-
-#define PROGRAM_VERTEX_ATTRIBUTE 0
-#define PROGRAM_TEXCOORD_ATTRIBUTE 1
+    glEnable(GL_BLEND);
 
     QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
     const char *vsrc =
-        "attribute highp vec4 vertex;\n"
-        "attribute mediump vec4 texCoord;\n"
-        "varying mediump vec4 texc;\n"
+        "attribute highp vec4 vertexAttr;\n"
         "uniform mediump mat4 matrix;\n"
-        "void main(void)\n"
+        "attribute lowp vec4 colorAttr;\n"
+        "varying lowp vec4 color;\n"
+        "void main()\n"
         "{\n"
-        "    gl_Position = matrix * vertex;\n"
-        "    texc = texCoord;\n"
+        "    gl_Position = matrix * vertexAttr;\n"
+        "    color = colorAttr;\n"
         "}\n";
     vshader->compileSourceCode(vsrc);
 
     QOpenGLShader *fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
     const char *fsrc =
-        "uniform sampler2D texture;\n"
-        "varying mediump vec4 texc;\n"
-        "void main(void)\n"
+        "varying lowp vec4 color;\n"
+        "void main()\n"
         "{\n"
-        "    gl_FragColor = texture2D(texture, texc.st);\n"
+        "    gl_FragColor = color;\n"
         "}\n";
     fshader->compileSourceCode(fsrc);
 
-    program = new QOpenGLShaderProgram;
-    program->addShader(vshader);
-    program->addShader(fshader);
-    program->bindAttributeLocation("vertex", PROGRAM_VERTEX_ATTRIBUTE);
-    program->bindAttributeLocation("texCoord", PROGRAM_TEXCOORD_ATTRIBUTE);
-    program->link();
+    m_program = new QOpenGLShaderProgram;
+    m_program->addShader(vshader);
+    m_program->addShader(fshader);
+    m_program->link();
 
-    program->bind();
-    program->setUniformValue("texture", 0);
+    m_vertexAttr = m_program->attributeLocation( "vertexAttr" );
+    m_colorAttr = m_program->attributeLocation( "colorAttr" );
+    m_matrixUniform = m_program->attributeLocation( "matrix" );
+
+    m_player = new player(m_program, m_vertexAttr, m_colorAttr);
 }
 
 void MainWindow::resizeGL(int w, int h) {
-    //glMatrixMode(GL_PROJECTION);
-    //glLoadIdentity();
-    //glOrtho(0.0, windowWidth, windowHeight, 0.0, 1.0, 0.0); //задание размеров всего окна
-    //glViewport(0, 0, (GLint)w, (GLint)h);
-    int side = qMin(w, h);
-    glViewport((w - side) / 2, (h - side) / 2, side, side);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, windowWidth, windowHeight, 0.0, 1.0, 0.0); //задание размеров всего окна
+    glViewport(0, 0, w, h);
 }
 
 void MainWindow::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//    drawBackground();
-//    drawStat();
-//    if (actCheat) {
-//        drawActivatedCheat();
-//    }
-//    if (win) {
-//        drawWinMessage();
-//    }
-
-//    drawp();
-    QMatrix4x4 m;
-    m.ortho(-0.5f, +0.5f, +0.5f, -0.5f, 4.0f, 15.0f);
-    m.translate(0.0f, 0.0f, -10.0f);
-
-    program->setUniformValue("matrix", m);
-    program->enableAttributeArray(PROGRAM_VERTEX_ATTRIBUTE);
-    program->enableAttributeArray(PROGRAM_TEXCOORD_ATTRIBUTE);
-    program->setAttributeBuffer(PROGRAM_VERTEX_ATTRIBUTE, GL_FLOAT, 0, 3, 5 * sizeof(GLfloat));
-    program->setAttributeBuffer(PROGRAM_TEXCOORD_ATTRIBUTE, GL_FLOAT, 3 * sizeof(GLfloat), 2, 5 * sizeof(GLfloat));
-
-    for (int i = 0; i < 6; ++i) {
-        textures[i]->bind();
-        glDrawArrays(GL_TRIANGLE_FAN, i * 4, 4);
+    drawBackground();
+    drawStat();
+    if (actCheat) {
+        drawActivatedCheat();
     }
-//    textures[0]->bind();
-//    glDrawArrays(GL_TRIANGLE_FAN, 3, 3);
+    if (win) {
+        drawWinMessage();
+    }
+
+    drawp();
 }
 
 
@@ -356,37 +331,6 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
         //timer->stop();
         key = 0;
     }
-}
-
-void MainWindow::LoadPlayerTexture() {
-    static const int coords[6][4][3] = {
-        { { +1, -1, -1 }, { -1, -1, -1 }, { -1, +1, -1 }, { +1, +1, -1 } },
-        { { +1, +1, -1 }, { -1, +1, -1 }, { -1, +1, +1 }, { +1, +1, +1 } },
-        { { +1, -1, +1 }, { +1, -1, -1 }, { +1, +1, -1 }, { +1, +1, +1 } },
-        { { -1, -1, -1 }, { -1, -1, +1 }, { -1, +1, +1 }, { -1, +1, -1 } },
-        { { +1, -1, +1 }, { -1, -1, +1 }, { -1, -1, -1 }, { +1, -1, -1 } },
-        { { -1, -1, +1 }, { +1, -1, +1 }, { +1, +1, +1 }, { -1, +1, +1 } }
-    };
-
-    for (int j = 0; j < 6; ++j)
-        textures[j] = new QOpenGLTexture(QImage(":/resources/images/logo.png").mirrored());
-
-    QVector<GLfloat> vertData;
-    for (int i = 0; i < 6; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            // vertex position
-            vertData.append(0.2 * coords[i][j][0]);
-            vertData.append(0.2 * coords[i][j][1]);
-            vertData.append(0.2 * coords[i][j][2]);
-            // texture coordinate
-            vertData.append(j == 0 || j == 3);
-            vertData.append(j == 0 || j == 1);
-        }
-    }
-
-    vbo.create();
-    vbo.bind();
-    vbo.allocate(vertData.constData(), vertData.count() * sizeof(GLfloat));
 }
 
 MainWindow::~MainWindow()

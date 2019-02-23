@@ -1,6 +1,6 @@
 #include "player.h"
 
-player::player()
+player::player( QOpenGLShaderProgram *program, int vertexAttr, int colorAttr )
 {
     hp = 100; //уровень здоровья игрока
     score = 0; //стартовые очки
