@@ -3,46 +3,15 @@
 MainWindow::MainWindow(QWidget *parent)
     : QGLWidget(parent)
 {
-    connect(timer, SIGNAL(timeout()), this, SLOT(movep()));
-    timer->start(time);
+    //connect(timer, SIGNAL(timeout()), this, SLOT(movep()));
+    //timer->start(time);
 }
 
 void MainWindow::initializeGL() {
     glClearColor(1.0, 1.0, 1.0, 1.0); //заливка всего окна белым непрозрачным фоном
     glEnable(GL_BLEND);
-
-    QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
-    const char *vsrc =
-        "attribute highp vec4 vertexAttr;\n"
-        "uniform mediump mat4 matrix;\n"
-        "attribute lowp vec4 colorAttr;\n"
-        "varying lowp vec4 color;\n"
-        "void main()\n"
-        "{\n"
-        "    gl_Position = matrix * vertexAttr;\n"
-        "    color = colorAttr;\n"
-        "}\n";
-    vshader->compileSourceCode(vsrc);
-
-    QOpenGLShader *fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
-    const char *fsrc =
-        "varying lowp vec4 color;\n"
-        "void main()\n"
-        "{\n"
-        "    gl_FragColor = color;\n"
-        "}\n";
-    fshader->compileSourceCode(fsrc);
-
-    m_program = new QOpenGLShaderProgram;
-    m_program->addShader(vshader);
-    m_program->addShader(fshader);
-    m_program->link();
-
-    m_vertexAttr = m_program->attributeLocation( "vertexAttr" );
-    m_colorAttr = m_program->attributeLocation( "colorAttr" );
-    m_matrixUniform = m_program->attributeLocation( "matrix" );
-
-    m_player = new player(m_program, m_vertexAttr, m_colorAttr);
+    m_player = new player();
+    //connect(m_player->timer, SIGNAL(timeout()), this, SLOT(movep()));
 }
 
 void MainWindow::resizeGL(int w, int h) {
@@ -208,19 +177,23 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
     if (!event->isAutoRepeat()) {
         switch (event->key()) {
         case Qt::Key_Left:
-            //timer->start(time);
+            //m_player->timer->start(m_player->time);
+            movep();
             key = int(event->key());
             break;
         case Qt::Key_Right:
-            //timer->start(time);
+            //m_player->timer->start(m_player->time);
+            movep();
             key = int(event->key());
             break;
         case Qt::Key_Up:
-            //timer->start(time);
+            //m_player->timer->start(m_player->time);
+            movep();
             key = int(event->key());
             break;
         case Qt::Key_Down:
-            //timer->start(time);
+            //m_player->timer->start(m_player->time);
+            movep();
             key = int(event->key());
             break;
         case Qt::Key_Space:
@@ -328,16 +301,14 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
     if (!event->isAutoRepeat()) {
-        //timer->stop();
+        //m_player->timer->stop();
         key = 0;
     }
 }
 
 MainWindow::~MainWindow()
 {
-//    makeCurrent();
-//    здесь должно быть удаление текстур
-//    doneCurrent();
+
 }
 
 //систему работы с файлами нужно доработать для лучшей читаемости

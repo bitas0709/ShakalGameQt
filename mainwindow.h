@@ -64,10 +64,6 @@ protected:
 
 private:
     player *m_player;
-    QOpenGLShaderProgram *m_program;
-    int m_vertexAttr;
-    int m_colorAttr;
-    int m_matrixUniform;
 
 signals:
     void signalmove(QString key); //сигнал для перемещения игрока
