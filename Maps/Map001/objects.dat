@@ -1,0 +1,45 @@
+//Объекты всегда рисуются сверху вниз и слева направо
+
+Objects: 3
+
+Object_1 
+{
+
+id: 0
+type: wall
+sizeX: 10.0
+sizeY: 1.0
+startX: -5.0
+startY: 3.0
+passable: no
+texture: stone
+
+}
+
+Object_2 
+{
+
+id: 1
+type: floor
+sizeX: 20.0
+sizeY: 20.0
+startX: -10.0
+startY: -10.0
+passable: yes
+texture: grass
+
+}
+
+Object_3
+{
+
+id: 2
+type: floor
+sizeX: 4.0
+sizeY: 3.0
+startX: 1.0
+startY: 4.0
+passable: yes
+texture: block
+
+}

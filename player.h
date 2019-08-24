@@ -1,15 +1,43 @@
-#ifndef PLAYER_H
-#define PLAYER_H
-#include "unit.h"
+#ifndef TRIANGLE_H
+#define TRIANGLE_H
 
-class player : public unit
+#include <vector>
+#include <QOpenGLShaderProgram>
+#include <QOpenGLTexture>
+
+class Player
 {
 public:
-    player();
-    int time; //скорость движения игрока
+    Player( QOpenGLShaderProgram *program,
+              int vertexAttr, int textureAttr, int textureUniform );
+    ~Player();
+
+    void draw();
+
+    void setX0( float x );
+    void setY0(float y );
+
+    float x0() const;
+    float y0() const;
+
 private:
-    qint8 score; //счёт игрока
+    void initVertices();
+    void initTextureCoord();
+
+    std::vector<float> m_vertices;
+    std::vector<float> m_textureCoords;
+
+    QOpenGLShaderProgram *m_program;
+
+    int m_vertexAttr;
+    int m_textureAttr;
+    int m_textureUniform;
+
+    QOpenGLTexture *m_texture;
+
+    float m_x0;
+    float m_y0;
+    float m_size;
 };
 
-#endif // PLAYER_H
-
+#endif // TRIANGLE_H
