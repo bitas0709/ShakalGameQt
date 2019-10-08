@@ -61,6 +61,8 @@ void map::readDataFromFile( int number ) {
                         ObjectData[numObject].push_back(buff.split("startX:").at(1));
                     } else if (buff.contains("startY:")) {
                         ObjectData[numObject].push_back(buff.split("startY:").at(1));
+                    } else if (buff.contains("startZ")) {
+                        ObjectData[numObject].push_back(buff.split("startZ:").at(1));
                     } else if (buff.contains("passable:")) {
                         ObjectData[numObject].push_back(buff.split("passable:").at(1));
                     } else if (buff.contains("texture:")) {

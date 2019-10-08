@@ -10,6 +10,9 @@ Scene::~Scene()
 {
     makeCurrent();
     delete m_player;
+    for (int i = 0; i < m_map->numObjects; i++) {
+        delete m_object[i];
+    }
     doneCurrent();
 }
 
@@ -38,10 +41,10 @@ void Scene::initializeGL() {
 
     m_player = new Player( &m_program, m_vertexAttr, m_textureAttr, m_textureUniform );
     m_map = new map();
+
     for (int i = 0; i < m_map->numObjects; i++) {
         m_object[i] = new Object( &m_program, m_vertexAttr, m_textureAttr, m_textureUniform, m_map->ObjectData[i]);
     }
-
 }
 
 void Scene::paintGL() {
@@ -81,18 +84,33 @@ void Scene::keyPressEvent(QKeyEvent *event) {
         switch(event->key()) {
         case Qt::Key_A:
             pressedKeys.push_back(Qt::Key_A);
+            matrixX-=0.1f;
             break;
         case Qt::Key_D:
             pressedKeys.push_back(Qt::Key_D);
+            matrixZ-=0.1f;
+            break;
+        case Qt::Key_E:
+            pressedKeys.push_back(Qt::Key_E);
+            matrixZ+=0.1f;
+            break;
+        case Qt::Key_Q:
+            pressedKeys.push_back(Qt::Key_Q);
+            matrixX+=0.1f;
             break;
         case Qt::Key_R:
-
+            pressedKeys.push_back(Qt::Key_R);
+            matrixX = 0.0f;
+            matrixY = 0.0f;
+            matrixZ = -1.0f;
             break;
         case Qt::Key_S:
             pressedKeys.push_back(Qt::Key_S);
+            matrixY-=0.1f;
             break;
         case Qt::Key_W:
             pressedKeys.push_back(Qt::Key_W);
+            matrixY+= 0.1f;
             break;
         case Qt::Key_Down:
             pressedKeys.push_back(Qt::Key_Down);
@@ -136,6 +154,39 @@ void Scene::keyReleaseEvent(QKeyEvent *event) {
             } else {
                 for (int i = 0; i < pressedKeys.size(); i++) {
                     if (pressedKeys.at(i) == Qt::Key_D) {
+                        pressedKeys.remove(i);
+                    }
+                }
+            }
+            break;
+        case Qt::Key_E:
+            if (pressedKeys.size() == 1) {
+                pressedKeys.remove(0);
+            } else {
+                for (int i = 0; i < pressedKeys.size(); i++) {
+                    if (pressedKeys.at(i) == Qt::Key_E) {
+                        pressedKeys.remove(i);
+                    }
+                }
+            }
+            break;
+        case Qt::Key_Q:
+            if (pressedKeys.size() == 1) {
+                pressedKeys.remove(0);
+            } else {
+                for (int i = 0; i < pressedKeys.size(); i++) {
+                    if (pressedKeys.at(i) == Qt::Key_Q) {
+                        pressedKeys.remove(i);
+                    }
+                }
+            }
+            break;
+        case Qt::Key_R:
+            if (pressedKeys.size() == 1) {
+                pressedKeys.remove(0);
+            } else {
+                for (int i = 0; i < pressedKeys.size(); i++) {
+                    if (pressedKeys.at(i) == Qt::Key_R) {
                         pressedKeys.remove(i);
                     }
                 }

@@ -49,7 +49,7 @@ void Object::initVertices( QList<QString> ObjectData ) {
     //4
     m_vertices[12] = ObjectData.at(3).toFloat() + ObjectData.at(1).toFloat();
     m_vertices[13] = ObjectData.at(4).toFloat();
-    m_vertices[14] = 0.0f;
+    m_vertices[14] = ObjectData.at(5).toFloat();
 
     //5
     m_vertices[15] = ObjectData.at(3).toFloat() + ObjectData.at(1).toFloat();
