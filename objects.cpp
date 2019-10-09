@@ -10,11 +10,11 @@ Object::Object( QOpenGLShaderProgram *program,
     initVertices( ObjectData );
     initTextureCoords();
 
-    if (ObjectData.at(6).contains("stone")) {
+    if (ObjectData.at(7).contains("stone")) {
         m_texture = new QOpenGLTexture( QImage(":/Textures/Stone.png") );
-    } else if (ObjectData.at(6).contains("grass")) {
+    } else if (ObjectData.at(7).contains("grass")) {
         m_texture = new QOpenGLTexture( QImage(":/Textures/Grass.jpg") );
-    } else if (ObjectData.at(6).contains("block")) {
+    } else if (ObjectData.at(7).contains("block")) {
         m_texture = new QOpenGLTexture( QImage(":/Textures/Blocks.jpg") );
     }
 }

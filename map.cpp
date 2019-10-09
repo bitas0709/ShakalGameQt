@@ -61,8 +61,8 @@ void map::readDataFromFile( int number ) {
                         ObjectData[numObject].push_back(buff.split("startX:").at(1));
                     } else if (buff.contains("startY:")) {
                         ObjectData[numObject].push_back(buff.split("startY:").at(1));
-                    } else if (buff.contains("startZ")) {
-                        ObjectData[numObject].push_back(buff.split("startZ:").at(1));
+                    } else if (buff.contains("coordZ")) {
+                        ObjectData[numObject].push_back(buff.split("coordZ:").at(1));
                     } else if (buff.contains("passable:")) {
                         ObjectData[numObject].push_back(buff.split("passable:").at(1));
                     } else if (buff.contains("texture:")) {
@@ -75,9 +75,26 @@ void map::readDataFromFile( int number ) {
             }
         }
     }
+    sortObjects();
     for (int i = 0; i < numObjects; i++) {
         qDebug() << ObjectData[i];
     }
     map.close();
 
+}
+
+void map::sortObjects() {
+    bool allObjectsSorted = false;
+    QList<QString> tempObjectData;
+    while (!allObjectsSorted) {
+        allObjectsSorted = true;
+        for (int i = 1; i < numObjects; i++) {
+            if (ObjectData[i].at(5) < ObjectData[i - 1].at(5)) {
+                allObjectsSorted = false;
+                tempObjectData = ObjectData[i - 1];
+                ObjectData[i - 1] = ObjectData[i];
+                ObjectData[i] = tempObjectData;
+            }
+        }
+    }
 }

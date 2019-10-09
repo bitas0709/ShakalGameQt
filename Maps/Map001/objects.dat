@@ -11,6 +11,7 @@ sizeX: 10.0
 sizeY: 1.0
 startX: -5.0
 startY: 3.0
+coordZ: 1.0
 passable: no
 texture: stone
 
@@ -25,6 +26,7 @@ sizeX: 20.0
 sizeY: 20.0
 startX: -10.0
 startY: -10.0
+coordZ: 0.0
 passable: yes
 texture: grass
 
@@ -39,6 +41,7 @@ sizeX: 4.0
 sizeY: 3.0
 startX: 1.0
 startY: 4.0
+coordZ: 0.1
 passable: yes
 texture: block
 

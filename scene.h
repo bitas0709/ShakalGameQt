@@ -17,6 +17,10 @@ public:
     Scene( QWidget *parent = nullptr );
     ~Scene();
 
+private slots:
+
+    void tick();
+
 private:
 
     void initializeGL();
@@ -26,7 +30,8 @@ private:
     void keyPressEvent( QKeyEvent *event );
     void keyReleaseEvent( QKeyEvent *event );
     QVector<int> pressedKeys;
-
+    QTimer* doTick;
+    int tickTime = 16; //привязка к примерно 60 тикам в секунду. Фуфуфу так делать не надо
 
 
     QTimer *movementTimer;

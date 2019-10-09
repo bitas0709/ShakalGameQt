@@ -4,6 +4,8 @@ Scene::Scene( QWidget *parent ) :
     QOpenGLWidget( parent )
 {
     this->setFocusPolicy( Qt::StrongFocus );
+    doTick = new QTimer();
+    connect(doTick, SIGNAL(timeout()), this, SLOT(tick()));
 }
 
 Scene::~Scene()
@@ -73,12 +75,23 @@ void Scene::paintGL() {
     m_program.release();
 }
 
+void Scene::tick() {
+    if(!pressedKeys.isEmpty()) {
+        for (int i = 0; i < pressedKeys.size(); i++) {
+            if (pressedKeys.at(i) == Qt::Key_A || pressedKeys.at(i) == Qt::Key_D ||
+                    pressedKeys.at(i) == Qt::Key_S || pressedKeys.at(i) == Qt::Key_W) {
+                m_player->movePlayertimer().start(m_player->timerTimeout);
+            }
+        }
+    }
+}
+
 void Scene::resizeGL( int w, int h ) {
     glViewport( 0, 0, w, h );
 }
 
 void Scene::keyPressEvent(QKeyEvent *event) {
-    const float step = 0.1f;
+    //const float step = 0.1f;
 
     if(!event->isAutoRepeat()) {
         switch(event->key()) {
@@ -114,19 +127,19 @@ void Scene::keyPressEvent(QKeyEvent *event) {
             break;
         case Qt::Key_Down:
             pressedKeys.push_back(Qt::Key_Down);
-            m_player->setY0( m_player->y0() - step);
+            //m_player->setY0( m_player->y0() - step);
             break;
         case Qt::Key_Left:
             pressedKeys.push_back(Qt::Key_Left);
-            m_player->setX0( m_player->x0() - step);
+            //m_player->setX0( m_player->x0() - step);
             break;
         case Qt::Key_Right:
             pressedKeys.push_back(Qt::Key_Right);
-            m_player->setX0( m_player->x0() + step);
+            //m_player->setX0( m_player->x0() + step);
             break;
         case Qt::Key_Up:
             pressedKeys.push_back(Qt::Key_Up);
-            m_player->setY0( m_player->y0() + step);
+            //m_player->setY0( m_player->y0() + step);
             break;
         }
         qDebug() << pressedKeys;

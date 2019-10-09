@@ -23,6 +23,8 @@ public:
     QList<QString> ObjectData[10];
     int numObjects;
 
+    void sortObjects();
+
 private:
 
     void readDataFromFile( int number );
