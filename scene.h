@@ -2,24 +2,30 @@
 #define SCENE_H
 
 #include <QOpenGLWidget>
+#include <QCoreApplication>
 #include <QOpenGLShaderProgram>
+#include <QObject>
 #include <QKeyEvent>
 #include <QDebug>
 #include <QTimer>
 #include <QMatrix4x4>
+
 #include "player.h"
 #include "map.h"
+#include "gameengine.h"
 
 
 class Scene : public QOpenGLWidget
 {
+Q_OBJECT
 public:
     Scene( QWidget *parent = nullptr );
     ~Scene();
 
-private slots:
+signals:
 
-    void tick();
+    void keyPressGot( QKeyEvent *event );
+    void keyReleaseGot( QKeyEvent *event );
 
 private:
 
@@ -29,11 +35,7 @@ private:
 
     void keyPressEvent( QKeyEvent *event );
     void keyReleaseEvent( QKeyEvent *event );
-    QVector<int> pressedKeys;
-    QTimer* doTick;
-    int tickTime = 16; //привязка к примерно 60 тикам в секунду. Фуфуфу так делать не надо
-
-
+    GameEngine *gm;
     QTimer *movementTimer;
     int movementTime;
     bool canMove = true;
@@ -53,5 +55,7 @@ private:
     float matrixY = 0.0f;
     float matrixZ = -1.0f;
 };
+
+
 
 #endif // SCENE_H

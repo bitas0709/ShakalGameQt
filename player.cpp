@@ -88,7 +88,3 @@ float Player::x0() const {
 float Player::y0() const {
     return m_y0;
 }
-
-void Player::playerRun() {
-
-}
