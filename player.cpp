@@ -5,19 +5,33 @@ Player::Player( QOpenGLShaderProgram *program,
     m_program( program ),
     m_vertexAttr( vertexAttr ),
     m_textureAttr( textureAttr ),
-    m_textureUniform( textureUniform ),
-    m_x0( -0.5f ),
-    m_y0( -0.5f ),
-    m_size( 1.0f )
+    m_textureUniform( textureUniform )
 {
     initVertices();
     initTextureCoord();
 
-    m_texture = new QOpenGLTexture( QImage( ":/Textures/Ricardo.jpg") );
+    if (CurrentLineOfSightPlayer == EnumLineOfSightPlayer::LookLeft) {
+        m_texture = new QOpenGLTexture( QImage( ":/Textures/Mario.png" ).mirrored(true, false) );
+    } else {
+        m_texture = new QOpenGLTexture( QImage( ":/Textures/Mario.png" ) );
+    }
+
 }
 
 Player::~Player() {
     delete m_texture;
+}
+
+void Player::changePlayerTexture() {
+    if (CurrentLineOfSightPlayer == EnumLineOfSightPlayer::LookRight) {
+        m_texture = new QOpenGLTexture(QImage( ":/Textures/Mario.png" ));
+    } else {
+        m_texture = new QOpenGLTexture(QImage( ":/Textures/Mario.png" ).mirrored(true, false));
+    }
+}
+
+void Player::playerJump() {
+
 }
 
 void Player::draw()
@@ -37,54 +51,84 @@ void Player::draw()
 }
 
 void Player::initVertices() {
-    m_vertices.resize( 9 );
+    m_vertices.resize( 18 );
 
-    // 0 BOTTOM LEFT
-    m_vertices[0] = m_x0;
-    m_vertices[1] = m_y0;
+    //0
+    m_vertices[0] = startX;
+    m_vertices[1] = startY;
     m_vertices[2] = 0.0f;
 
-    // 1 BOTTOM RIGHT
-    m_vertices[3] = m_x0 + m_size;
-    m_vertices[4] = m_y0;
+    //1
+    m_vertices[3] = startX + sizeX;
+    m_vertices[4] = startY;
     m_vertices[5] = 0.0f;
 
-    // 2 TOP
-    m_vertices[6] = m_x0 + m_size / 2.0f;
-    m_vertices[7] = m_y0 + m_size;
+    //2
+    m_vertices[6] = startX;
+    m_vertices[7] = startY + sizeY;
     m_vertices[8] = 0.0f;
+
+    //3
+    m_vertices[9] = startX;
+    m_vertices[10] = startY + sizeY;
+    m_vertices[11] = 0.0f;
+
+    //4
+    m_vertices[12] = startX + sizeX;
+    m_vertices[13] = startY;
+    m_vertices[14] = 0.0f;
+
+    //5
+    m_vertices[15] = startX + sizeX;
+    m_vertices[16] = startY + sizeY;
+    m_vertices[17] = 0.0f;
+
 }
 
 void Player::initTextureCoord() {
-    m_textureCoords.resize( 6 );
+    m_textureCoords.resize( 12 );
 
-    // 0
+    //0
     m_textureCoords[0] = 0.0f;
     m_textureCoords[1] = 1.0f;
 
-    //1
+    // 1
     m_textureCoords[2] = 1.0f;
     m_textureCoords[3] = 1.0f;
 
-    //2
-    m_textureCoords[4] = 0.5f;
+    // 2
+    m_textureCoords[4] = 0.0f;
     m_textureCoords[5] = 0.0f;
+
+    // 3
+    m_textureCoords[6] = 0.0f;
+    m_textureCoords[7] = 0.0f;
+
+    // 4
+    m_textureCoords[8] = 1.0f;
+    m_textureCoords[9] = 1.0f;
+
+    // 5
+    m_textureCoords[10] = 1.0f;
+    m_textureCoords[11] = 0.0f;
 }
 
 void Player::setX0( float x ) {
-    m_x0 = x;
+    qDebug() << "setX0 = " << x;
+    startX = x;
     initVertices();
 }
 
 void Player::setY0( float y ) {
-    m_y0 = y;
+    qDebug() << "setY0 = " << y;
+    startY = y;
     initVertices();
 }
 
 float Player::x0() const {
-    return m_x0;
+    return startX;
 }
 
 float Player::y0() const {
-    return m_y0;
+    return startY;
 }

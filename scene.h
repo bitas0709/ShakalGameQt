@@ -12,7 +12,6 @@
 
 #include "player.h"
 #include "map.h"
-#include "gameengine.h"
 
 
 class Scene : public QOpenGLWidget
@@ -24,8 +23,12 @@ public:
 
 signals:
 
-    void keyPressGot( QKeyEvent *event );
-    void keyReleaseGot( QKeyEvent *event );
+    void tick();
+    void changePlayerTexture();
+
+private slots:
+
+    void gameTick();
 
 private:
 
@@ -35,16 +38,17 @@ private:
 
     void keyPressEvent( QKeyEvent *event );
     void keyReleaseEvent( QKeyEvent *event );
-    GameEngine *gm;
-    QTimer *movementTimer;
-    int movementTime;
-    bool canMove = true;
-    void movePlayer();
+    QVector<int> pressedKeys;
+
+    QTimer* doTick;
+    int tickTime = 16; //привязка к примерно 60 тикам в секунду. Фуфуфу так делать не надо, но я сделаю
 
     Player *m_player;
     map *m_map;
     Object *m_object[20];
     QOpenGLShaderProgram m_program;
+
+    QList<QString> collisionList; //список объектов, через которые игрок не сможет пройти
 
     int m_vertexAttr;
     int m_textureAttr;
@@ -54,6 +58,10 @@ private:
     float matrixX = 0.0f;
     float matrixY = 0.0f;
     float matrixZ = -1.0f;
+
+    float cameraSizeX = 50.0f;
+    float cameraSizeY = 50.0f;
+
 };
 
 

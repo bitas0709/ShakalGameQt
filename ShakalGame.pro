@@ -25,7 +25,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-        gameengine.cpp \
         main.cpp \
         dialog.cpp \
         map.cpp \
@@ -35,7 +34,6 @@ SOURCES += \
 
 HEADERS += \
         dialog.h \
-        gameengine.h \
         map.h \
         objects.h \
         player.h \
@@ -51,5 +49,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     maps.qrc \
-    shaders.qrc \
     textures.qrc

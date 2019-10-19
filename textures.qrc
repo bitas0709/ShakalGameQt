@@ -4,5 +4,6 @@
         <file>Textures/Ricardo.jpg</file>
         <file>Textures/Grass.jpg</file>
         <file>Textures/Stone.png</file>
+        <file>Textures/Mario.png</file>
     </qresource>
 </RCC>

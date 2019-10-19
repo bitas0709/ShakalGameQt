@@ -13,6 +13,7 @@ class Object {
 public:
     Object( QOpenGLShaderProgram *program,
             int vertexAttr, int textureAttr, int textureUniform, QList<QString> ObjectData );
+    //Object();
     ~Object();
 
     void draw();

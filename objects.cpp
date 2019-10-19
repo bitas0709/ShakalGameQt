@@ -20,7 +20,7 @@ Object::Object( QOpenGLShaderProgram *program,
 }
 
 Object::~Object() {
-
+    delete m_texture;
 }
 
 void Object::initVertices( QList<QString> ObjectData ) {
