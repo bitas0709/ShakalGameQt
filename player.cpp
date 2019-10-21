@@ -30,10 +30,6 @@ void Player::changePlayerTexture() {
     }
 }
 
-void Player::playerJump() {
-
-}
-
 void Player::draw()
 {
     m_texture->bind();
@@ -111,6 +107,20 @@ void Player::initTextureCoord() {
     // 5
     m_textureCoords[10] = 1.0f;
     m_textureCoords[11] = 0.0f;
+}
+
+void Player::playerJump() {
+    if (!isPlayerJump) {
+        if (!qFuzzyCompare(y0(), playerCoordBeforeJump)) {
+            setY0(startY - 0.1f);
+        }
+    } else {
+        if (!qFuzzyCompare(y0() - playerCoordBeforeJump, playerJumpHeight)) {
+            setY0(startY + 0.1f);
+        } else {
+            isPlayerJump = false;
+        }
+    }
 }
 
 void Player::setX0( float x ) {

@@ -1,6 +1,6 @@
 //Объекты всегда рисуются сверху вниз и слева направо
 
-Objects: 3
+Objects: 5
 
 Object_1 
 {
@@ -44,5 +44,35 @@ startY: 4.0
 coordZ: 0.1
 passable: no
 texture: block
+
+}
+
+Object_4
+{
+
+id: 3
+type: wall
+sizeX: 2.0
+sizeY: 6.0
+startX: 25.0
+startY: 5.0
+coordZ: -0.1
+passable: yes
+texture: block
+
+}
+
+Object_5
+{
+
+id: 4
+type: wall
+sizeX: 2.0
+sizeY: 6.0
+startX: 35.0
+startY: 5.0
+coordZ: 0.1
+passable: no
+texture: stone
 
 }

@@ -27,6 +27,10 @@ public:
     };
     int CurrentLineOfSightPlayer = LookRight;
 
+    float playerJumpHeight = 15.0f;
+    float playerCoordBeforeJump;
+    bool isPlayerJump = false;
+
     float maxRunSpeed = 3.0f; //максимальная скорость бега
     float timeOfIncreasingSpeed = 0.5f; //в секундах
     float RunSpeedIncreaseCoefficient = 0.5f; //не может быть больше максимальной скорости бега игрока
@@ -34,7 +38,11 @@ public:
     float currentPlayerYSpeed = 0.0f; //скорость игрока по оси y
     float playerWeight = 60.0f; //"вес" игрока
 
-    bool isPlayerOnGround = false;
+    bool isPlayerOnGround = true;
+
+signals:
+
+    void jumpButtonPressed();
 
 private slots:
 

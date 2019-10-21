@@ -29,6 +29,7 @@ signals:
 private slots:
 
     void gameTick();
+    void moveCamera();
 
 private:
 
@@ -48,7 +49,8 @@ private:
     Object *m_object[20];
     QOpenGLShaderProgram m_program;
 
-    QList<QString> collisionList; //список объектов, через которые игрок не сможет пройти
+    QMultiMap<int, float> collisionList; //список объектов, через которые игрок не сможет пройти. Добавляются только с passable: no
+    QVector<int> collisionObjNumWithPlayer; //номера трёх максимально близких к игроку объектов
 
     int m_vertexAttr;
     int m_textureAttr;
@@ -61,6 +63,7 @@ private:
 
     float cameraSizeX = 50.0f;
     float cameraSizeY = 50.0f;
+    bool stickCameraToThePlayer = true; //зафиксировать камеру на игроке
 
 };
 
