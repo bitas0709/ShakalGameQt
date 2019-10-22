@@ -97,7 +97,7 @@ void Scene::initializeGL() {
     }
     qDebug() << "collisionList size =" << collisionList.size();
     qDebug() << "collisionList unique keys =" << collisionList.uniqueKeys().size();
-    qDebug() << collisionList;
+    qDebug() << "collisionList before sorting" << collisionList;
 
     bool allCollisionListObjectsSorted = false;
     while (!allCollisionListObjectsSorted) {
@@ -119,7 +119,7 @@ void Scene::initializeGL() {
         }
     }
 
-    qDebug() << collisionList;
+    qDebug() << "collisionList after sorting" << collisionList;
 
     connect(doTick, SIGNAL(timeout()), SLOT(gameTick()));
     connect(this, SIGNAL(changePlayerTexture()), m_player, SLOT(changePlayerTexture()));

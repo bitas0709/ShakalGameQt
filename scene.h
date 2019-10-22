@@ -60,6 +60,7 @@ private:
     float matrixX = 0.0f;
     float matrixY = 0.0f;
     float matrixZ = -1.0f;
+    const float step = 0.1f;
 
     float cameraSizeX = 50.0f;
     float cameraSizeY = 50.0f;
