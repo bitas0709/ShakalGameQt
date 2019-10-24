@@ -18,30 +18,59 @@ Scene::~Scene()
 }
 
 void Scene::gameTick() {
+    if (CurrentObjNumPlayer.size() == 1) {
+        if (m_player->x0() >= collisionList.values(CurrentObjNumPlayer.at(0)).at(0) && m_player->x0() <= collisionList.values(CurrentObjNumPlayer.at(0)).at(1)) {
+            if (m_player->y0() > collisionList.values(CurrentObjNumPlayer.at(0)).at(3)) {
+                m_player->isPlayerOnGround = false;
+            } else if (qFuzzyCompare(m_player->y0(), collisionList.values(CurrentObjNumPlayer.at(0)).at(3))) {
+                m_player->isPlayerOnGround = true;
+            }
+        } else if (m_player->x0() < collisionList.values(CurrentObjNumPlayer.at(0)).at(0)) {
+            if (CurrentObjNumPlayer.at(0) > 1) {
+                CurrentObjNumPlayer.replace(0, CurrentObjNumPlayer.at(0) - 1);
+            }
+        } else if (m_player->x0() > collisionList.values(CurrentObjNumPlayer.at(0)).at(1)) {
+            if (CurrentObjNumPlayer.at(0) < collisionList.uniqueKeys().size()) {
+                CurrentObjNumPlayer.replace(0, CurrentObjNumPlayer.at(0) + 1);
+            }
+        }
+    }
+    if (!m_player->isPlayerOnGround) {
+        emit m_player->jumpButtonPressed(step);
+        if (!m_player->isPlayerJump) {
+            //m_player->setY0(m_player->y0() - step);
+        }
+    }
     if (pressedKeys.size() != 0) {
-        //const float step = 0.1f;
         for (int i = 0; i < pressedKeys.size(); i++) {
             if (pressedKeys[i] == Qt::Key_Left) {
                 m_player->setX0( m_player->x0() - step );
-                moveCamera();
+                if (stickCameraToThePlayer) {
+                    moveCamera();
+                }
                 if (m_player->CurrentLineOfSightPlayer == m_player->LookRight) {
                     m_player->CurrentLineOfSightPlayer = m_player->LookLeft;
                     emit changePlayerTexture();
                 }
             } else if (pressedKeys[i] == Qt::Key_Right) {
                 m_player->setX0( m_player->x0() + step );
-                moveCamera();
+                if (stickCameraToThePlayer) {
+                    moveCamera();
+                }
                 if (m_player->CurrentLineOfSightPlayer == m_player->LookLeft) {
                     m_player->CurrentLineOfSightPlayer = m_player->LookRight;
                     emit changePlayerTexture();
                 }
             } else if (pressedKeys[i] == Qt::Key_Space) {
-                if (!m_player->isPlayerOnGround) {
-                    emit m_player->jumpButtonPressed();
+                if (m_player->isPlayerOnGround) {
+                    //m_player->setY0(m_player->y0() + step);
+                    m_player->isPlayerJump = true;
+                    emit m_player->jumpButtonPressed(step);
                 }
             }
         }
     }
+    qDebug() << "NumObject =" << CurrentObjNumPlayer.at(0);
     update();
 }
 
@@ -84,15 +113,15 @@ void Scene::initializeGL() {
     m_matrixUniform = m_program.uniformLocation( "matrix" );
 
     m_player = new Player( &m_program, m_vertexAttr, m_textureAttr, m_textureUniform );
-    connect(m_player, SIGNAL(jumpButtonPressed()), m_player, SLOT(playerJump()));
+    connect(m_player, SIGNAL(jumpButtonPressed(float)), m_player, SLOT(playerJump(float)));
     m_map = new map();
     for (int i = 0; i < m_map->numObjects; i++) {
         m_object[i] = new Object( &m_program, m_vertexAttr, m_textureAttr, m_textureUniform, m_map->ObjectData[i]);
         if (m_map->ObjectData[i].at(6).contains("no")) { //внесение в список объектов, через которые игрок не должен проходить
-            collisionList.insert(i, m_map->ObjectData[i].at(3).toFloat()); //внесение начальной координаты x
-            collisionList.insert(i, m_map->ObjectData[i].at(1).toFloat() + m_map->ObjectData[i].at(3).toFloat()); //координата x конца объекта
-            collisionList.insert(i, m_map->ObjectData[i].at(4).toFloat()); //внесение начальной координаты y
             collisionList.insert(i, m_map->ObjectData[i].at(2).toFloat() + m_map->ObjectData[i].at(4).toFloat()); //координата y конца объекта
+            collisionList.insert(i, m_map->ObjectData[i].at(4).toFloat()); //внесение начальной координаты y
+            collisionList.insert(i, m_map->ObjectData[i].at(1).toFloat() + m_map->ObjectData[i].at(3).toFloat()); //координата x конца объекта
+            collisionList.insert(i, m_map->ObjectData[i].at(3).toFloat()); //внесение начальной координаты x
         }
     }
     qDebug() << "collisionList size =" << collisionList.size();
@@ -120,6 +149,28 @@ void Scene::initializeGL() {
     }
 
     qDebug() << "collisionList after sorting" << collisionList;
+
+    for (int i = 1; i <= collisionList.uniqueKeys().size(); i++) {
+        if (m_player->x0() >= collisionList.values(i).at(0) && m_player->x0() <= collisionList.values(i).at(1)) {
+            CurrentObjNumPlayer.push_back(i);
+        }
+    }
+    if (CurrentObjNumPlayer.size() == 1) {
+
+    } else if (CurrentObjNumPlayer.size() > 1) {
+        float tempHeight = 0.0f;
+        for  (int i = 0; i < CurrentObjNumPlayer.size(); i++) {
+            if (collisionList.values(CurrentObjNumPlayer.at(i)).at(4) > tempHeight) {
+                tempHeight = collisionList.values(CurrentObjNumPlayer.at(i)).at(4);
+            } else {
+
+            }
+        }
+    } else if (CurrentObjNumPlayer.size() == 0) {
+        qDebug() << "Что-то явно не так. Под игроком нет ни одного объекта";
+    }
+
+    //qDebug() << "Игрок стоит на" << CurrentObjNumPlayer << "объекте";
 
     connect(doTick, SIGNAL(timeout()), SLOT(gameTick()));
     connect(this, SIGNAL(changePlayerTexture()), m_player, SLOT(changePlayerTexture()));
@@ -212,7 +263,7 @@ void Scene::keyPressEvent( QKeyEvent *event ) {
             break;
         case Qt::Key_Space:
             pressedKeys.push_back(Qt::Key_Space);
-            emit m_player->jumpButtonPressed();
+            //emit m_player->jumpButtonPressed();
             break;
         default:
             qDebug() << event->key();

@@ -42,11 +42,11 @@ public:
 
 signals:
 
-    void jumpButtonPressed();
+    void jumpButtonPressed(float);
 
 private slots:
 
-    void playerJump();
+    void playerJump(float step);
     void changePlayerTexture();
 
 private:

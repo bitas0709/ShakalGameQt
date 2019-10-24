@@ -50,7 +50,7 @@ private:
     QOpenGLShaderProgram m_program;
 
     QMultiMap<int, float> collisionList; //список объектов, через которые игрок не сможет пройти. Добавляются только с passable: no
-    QVector<int> collisionObjNumWithPlayer; //номера трёх максимально близких к игроку объектов
+    QVector<int> CurrentObjNumPlayer; //номера объектов, над или под которыми находится игрок
 
     int m_vertexAttr;
     int m_textureAttr;
