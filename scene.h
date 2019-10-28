@@ -43,14 +43,14 @@ private:
 
     QTimer* doTick;
     int tickTime = 16; //привязка к примерно 60 тикам в секунду. Фуфуфу так делать не надо, но я сделаю
+    //по умолчанию 16
+
+    QVector<int> playerChunkNum; //номер чанка, в котором находится игрок
 
     Player *m_player;
     map *m_map;
-    Object *m_object[20];
+    Object *m_object[2000];
     QOpenGLShaderProgram m_program;
-
-    QMultiMap<int, float> collisionList; //список объектов, через которые игрок не сможет пройти. Добавляются только с passable: no
-    QVector<int> CurrentObjNumPlayer; //номера объектов, над или под которыми находится игрок
 
     int m_vertexAttr;
     int m_textureAttr;

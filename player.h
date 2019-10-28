@@ -22,6 +22,11 @@ public:
     float x0() const;
     float y0() const;
 
+    float startX = 15.0f;
+    float startY = 10.0f;
+    float sizeX = 2.0f;
+    float sizeY = 3.0f;
+
     enum EnumLineOfSightPlayer { //направление взгляда игрока
         LookLeft, LookRight
     };
@@ -71,10 +76,6 @@ private:
     //float m_y0;
     //float m_size;
 
-    float startX = 15.0f;
-    float startY = 10.0f;
-    float sizeX = 2.0f;
-    float sizeY = 3.0f;
     float CenterCoordX = (startX + sizeX) / 2.0f;
     float CenterCoordY = (startY + sizeY) / 2.0f;
 };

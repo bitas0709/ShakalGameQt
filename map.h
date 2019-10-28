@@ -8,6 +8,7 @@
 #include <QString>
 #include <QDebug>
 #include <QList>
+#include <QtMath>
 #include "objects.h"
 
 class map
@@ -24,6 +25,11 @@ public:
     int numObjects;
 
     void sortObjects();
+
+    QVector<int> ChunkList[100];
+    float mapSize; //размер карты
+    int countChunks; //количество чанков
+    float chunkSize = 5.0f; //размер шага для разделения карты на чанки по оси X
 
 private:
 
