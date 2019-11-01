@@ -17,23 +17,22 @@ public:
     map();
     ~map();
 
-    void draw();
+    int currentMap = 1; //задание номера карты
 
-    int currentMap = 1;
+    QList<QString> ObjectData[10]; //данные об объектах, считанных из файла
+    int numObjects; //количество объектов, считанных из файла
 
-    QList<QString> ObjectData[10];
-    int numObjects;
+    void sortObjects(); //сортировка объектов и разнесение их по чанкам
 
-    void sortObjects();
-
-    QVector<int> ChunkList[100];
+    QVector<int> ChunkList[100]; //вектор для хранения номеров объектов в чанках
+    float minX = 0.0f, maxX = 0.0f; //крайняя левая координата X и крайняя правая
     float mapSize; //размер карты
     int countChunks; //количество чанков
     float chunkSize = 5.0f; //размер шага для разделения карты на чанки по оси X
 
 private:
 
-    void readDataFromFile( int number );
+    void readDataFromFile( int number ); //считывание данных из файла
     bool readingObjectData = false;
 
     int realNumOfObjects = 0;

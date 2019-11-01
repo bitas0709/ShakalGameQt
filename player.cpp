@@ -10,7 +10,7 @@ Player::Player( QOpenGLShaderProgram *program,
     initVertices();
     initTextureCoord();
 
-    if (CurrentLineOfSightPlayer == EnumLineOfSightPlayer::LookLeft) {
+    if (CurrentLineOfSightPlayer == EnumLineOfSightPlayer::LookLeft) { //Mario.png
         m_texture = new QOpenGLTexture( QImage( ":/Textures/Mario.png" ).mirrored(true, false) );
     } else {
         m_texture = new QOpenGLTexture( QImage( ":/Textures/Mario.png" ) );

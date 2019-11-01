@@ -46,6 +46,7 @@ private:
     //по умолчанию 16
 
     QVector<int> playerChunkNum; //номер чанка, в котором находится игрок
+    int objUnderPlayer; //номер объекта, находящегося под игроком
 
     Player *m_player;
     map *m_map;

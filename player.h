@@ -14,13 +14,13 @@ public:
               int vertexAttr, int textureAttr, int textureUniform );
     ~Player();
 
-    void draw();
+    void draw(); //отрисовка игрока
 
-    void setX0( float x );
-    void setY0( float y );
+    void setX0( float x ); //задание новой координаты X
+    void setY0( float y ); //задание новой координаты Y
 
-    float x0() const;
-    float y0() const;
+    float x0() const; //получение текущей координаты X
+    float y0() const; //получение текущей координаты Y
 
     float startX = 15.0f;
     float startY = 10.0f;

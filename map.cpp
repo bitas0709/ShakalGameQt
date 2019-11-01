@@ -10,10 +10,6 @@ map::map()
 map::~map() {
 }
 
-void map::draw() {
-
-}
-
 void map::readDataFromFile( int number ) {
 
     QString fileName;
@@ -84,13 +80,12 @@ void map::readDataFromFile( int number ) {
 }
 
 void map::sortObjects() {
-    float minX = 0.0f, maxX = 0.0f;
     //int countChunks; //количество чанков
-    bool allObjectsSorted = false;
-    QList<QString> tempObjectData;
+    bool allObjectsSorted = false; //проверка окончания сортировки. По умолчанию считается, что список не отсортирован
+    QList<QString> tempObjectData; //временный список для копирования данных
     while (!allObjectsSorted) {
         allObjectsSorted = true;
-        for (int i = 1; i < numObjects; i++) {
+        for (int i = 1; i < numObjects; i++) { //сортировка объектов по оси Z для правильной отрисовки
             if (ObjectData[i].at(5) < ObjectData[i - 1].at(5)) {
                 allObjectsSorted = false;
                 tempObjectData = ObjectData[i - 1];
@@ -99,7 +94,7 @@ void map::sortObjects() {
             }
         }
     }
-    for (int i = 0; i < numObjects; i++) {
+    for (int i = 0; i < numObjects; i++) { //нахождение минимальной и максимальной точки X для рассчёта размера карты
         if (ObjectData[i].at(3).toFloat() < minX) {
             minX = ObjectData[i].at(3).toFloat();
         }
@@ -123,7 +118,7 @@ void map::sortObjects() {
             qDebug() << "startJ =" << qCeil(qreal(ObjectData[i].at(3).toFloat() / chunkSize));
             qDebug() << "endJ =" << qCeil(qreal(endX / chunkSize));
             for (int j = qCeil(qreal(ObjectData[i].at(3).toFloat() / chunkSize));
-                 j <= qCeil(qreal(endX / chunkSize)); j++) {
+                j <= qCeil(qreal(endX / chunkSize)); j++) {
                 qDebug() << "j =" << j;
                 ChunkList[j].push_back(i);
             }

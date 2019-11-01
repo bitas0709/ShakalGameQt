@@ -18,8 +18,6 @@ Scene::~Scene()
 }
 
 void Scene::gameTick() {
-    //qDebug() << "left side of Player =" << qCeil(qreal(m_player->x0() / m_map->chunkSize));
-    //qDebug() << "right side of Player =" << qCeil(qreal((m_player->x0() + m_player->sizeX) / m_map->chunkSize));
     if (qCeil(qreal(m_player->x0() / m_map->chunkSize)) == qCeil(qreal((m_player->x0() + m_player->sizeX) / m_map->chunkSize))) {
         if (playerChunkNum.size() == 1) {
             if (playerChunkNum.at(0) != qCeil(qreal(m_player->x0() / m_map->chunkSize))) {
@@ -34,7 +32,6 @@ void Scene::gameTick() {
         } else {
             qDebug() << "Something wrong, I can feel it";
         }
-        //playerChunkNum.at(0) = int(m_player->x0() / m_map->chunkSize);
     } else {
         if (playerChunkNum.size() == 1) {
             playerChunkNum.clear();
@@ -54,11 +51,101 @@ void Scene::gameTick() {
             qDebug() << "Something wrong, I can feel it";
         }
     }
-    qDebug() << "playerChunkNum =" << playerChunkNum;
+    //qDebug() << "playerChunkNum =" << playerChunkNum;
+    float highestPointObj = 0.0f;
+    QVector<int> tempObjUndPointsPlayer;
+    if (playerChunkNum.size() == 1) {
+        for (int i = 0; i < m_map->ChunkList[playerChunkNum.at(0)].size(); i++) {
+            if (m_map->ObjectData[m_map->ChunkList[playerChunkNum.at(0)].at(i)].at(3).toFloat() < m_player->x0() && //поиск объектов под левой точкой игрока
+                    m_map->ObjectData[m_map->ChunkList[playerChunkNum.at(0)].at(i)].at(3).toFloat() +
+                    m_map->ObjectData[m_map->ChunkList[playerChunkNum.at(0)].at(i)].at(1).toFloat() > m_player->x0()) {
+                if (!tempObjUndPointsPlayer.contains(m_map->ChunkList[playerChunkNum.at(0)].at(i))) {
+                    tempObjUndPointsPlayer.push_back(m_map->ChunkList[playerChunkNum.at(0)].at(i));
+                }
+            }
+            if (m_map->ObjectData[m_map->ChunkList[playerChunkNum.at(0)].at(i)].at(3).toFloat() < m_player->x0() + m_player->sizeX && //поиск объектов под правой точкой игрока
+                    m_map->ObjectData[m_map->ChunkList[playerChunkNum.at(0)].at(i)].at(3).toFloat() +
+                    m_map->ObjectData[m_map->ChunkList[playerChunkNum.at(0)].at(i)].at(1).toFloat() > m_player->x0() + m_player->sizeX) {
+                if (!tempObjUndPointsPlayer.contains(m_map->ChunkList[playerChunkNum.at(0)].at(i))) {
+                    tempObjUndPointsPlayer.push_back(m_map->ChunkList[playerChunkNum.at(0)].at(i));
+                }
+            }
+        }
+        qDebug() << tempObjUndPointsPlayer;
+        for (int i = 0; i < tempObjUndPointsPlayer.size(); i++) { //удаление номеров объектов, которые выше ног игрока
+            if (m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(4).toFloat() +
+                    m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(2).toFloat() > m_player->y0()) {
+                tempObjUndPointsPlayer.remove(i);
+            }
+        }
+        for (int i = 0; i < tempObjUndPointsPlayer.size(); i++) { //поиск объекта, максимально близкого к ногам игрока
+            if (m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(4).toFloat() +
+                    m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(2).toFloat() > highestPointObj) {
+                highestPointObj = m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(4).toFloat() +
+                        m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(2).toFloat();
+            }
+        }
+    } else if (playerChunkNum.size() == 2) {
+        for (int i = 0; i < m_map->ChunkList[playerChunkNum.at(0)].size(); i++) {
+            if (m_map->ObjectData[m_map->ChunkList[playerChunkNum.at(0)].at(i)].at(3).toFloat() < m_player->x0() && //поиск объектов под левой точкой игрока
+                    m_map->ObjectData[m_map->ChunkList[playerChunkNum.at(0)].at(i)].at(3).toFloat() + m_map->ObjectData[m_map->ChunkList[playerChunkNum.at(0)].at(i)].at(1).toFloat() > m_player->x0()) {
+                if (!tempObjUndPointsPlayer.contains(m_map->ChunkList[playerChunkNum.at(0)].at(i))) {
+                    tempObjUndPointsPlayer.push_back(m_map->ChunkList[playerChunkNum.at(0)].at(i));
+                }
+            }
+            if (m_map->ObjectData[m_map->ChunkList[playerChunkNum.at(0)].at(i)].at(3).toFloat() < m_player->x0() + m_player->sizeX && //поиск объектов под правой точкой игрока
+                    m_map->ObjectData[m_map->ChunkList[playerChunkNum.at(0)].at(i)].at(3).toFloat() +
+                    m_map->ObjectData[m_map->ChunkList[playerChunkNum.at(0)].at(i)].at(1).toFloat() > m_player->x0() + m_player->sizeX) {
+                if (!tempObjUndPointsPlayer.contains(m_map->ChunkList[playerChunkNum.at(0)].at(i))) {
+                    tempObjUndPointsPlayer.push_back(m_map->ChunkList[playerChunkNum.at(0)].at(i));
+                }
+            }
+        }
+        for (int i = 0; i < m_map->ChunkList[playerChunkNum.at(1)].size(); i++) {
+            if (m_map->ObjectData[m_map->ChunkList[playerChunkNum.at(1)].at(i)].at(3).toFloat() < m_player->x0() && //поиск объектов под левой точкой игрока
+                    m_map->ObjectData[m_map->ChunkList[playerChunkNum.at(1)].at(i)].at(3).toFloat() +
+                    m_map->ObjectData[m_map->ChunkList[playerChunkNum.at(1)].at(i)].at(1).toFloat() > m_player->x0()) {
+                if (!tempObjUndPointsPlayer.contains(m_map->ChunkList[playerChunkNum.at(1)].at(i))) {
+                    tempObjUndPointsPlayer.push_back(m_map->ChunkList[playerChunkNum.at(1)].at(i));
+                }
+            }
+            if (m_map->ObjectData[m_map->ChunkList[playerChunkNum.at(1)].at(i)].at(3).toFloat() < m_player->x0() + m_player->sizeX && //поиск объектов под правой точкой игрока
+                    m_map->ObjectData[m_map->ChunkList[playerChunkNum.at(1)].at(i)].at(3).toFloat() +
+                    m_map->ObjectData[m_map->ChunkList[playerChunkNum.at(1)].at(i)].at(1).toFloat() > m_player->x0() + m_player->sizeX) {
+                if (!tempObjUndPointsPlayer.contains(m_map->ChunkList[playerChunkNum.at(1)].at(i))) {
+                    tempObjUndPointsPlayer.push_back(m_map->ChunkList[playerChunkNum.at(1)].at(i));
+                }
+            }
+        }
+        qDebug() << tempObjUndPointsPlayer;
+        for (int i = 0; i < tempObjUndPointsPlayer.size(); i++) { //удаление номеров объектов, которые выше ног игрока
+            if (m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(4).toFloat() +
+                    m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(2).toFloat() > m_player->y0()) {
+                tempObjUndPointsPlayer.remove(i);
+            }
+        }
+        for (int i = 0; i < tempObjUndPointsPlayer.size(); i++) { //поиск объекта, максимально близкого к ногам игрока
+            if (m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(4).toFloat() +
+                    m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(2).toFloat() > highestPointObj) {
+                highestPointObj = m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(4).toFloat() +
+                        m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(2).toFloat();
+            }
+        }
+    }
+    qDebug() << "highestPointObj =" << highestPointObj;
+    if (!m_player->isPlayerJump) {
+        if (m_player->y0() - 0.1f > highestPointObj) {
+            m_player->isPlayerOnGround = false;
+        } else {
+            m_player->isPlayerOnGround = true;
+        }
+    }
     if (!m_player->isPlayerOnGround) {
-        emit m_player->jumpButtonPressed(step);
+        //emit m_player->jumpButtonPressed(step);
         if (!m_player->isPlayerJump) {
-            //m_player->setY0(m_player->y0() - step);
+            if (m_player->y0() > 0) {
+                m_player->setY0(m_player->y0() - step);
+            }
         }
     }
     if (pressedKeys.size() != 0) {
@@ -78,7 +165,7 @@ void Scene::gameTick() {
                             numObjects.push_back(m_map->ChunkList[playerChunkNum.at(0) - 1].at(j));
                         }
                     }
-                } else {
+                } else if (playerChunkNum.at(0) == 0) {
                     for (int j = 0; j < m_map->ChunkList[playerChunkNum.at(0)].size(); j++) {
                         //получение номеров объектов в чанке, в котором находится игрок
                         if (!numObjects.contains(m_map->ChunkList[playerChunkNum.at(0)].at(j))) {
@@ -100,7 +187,9 @@ void Scene::gameTick() {
                     }
                 }
                 if (playerCanRun) {
-                    m_player->setX0( m_player->x0() - step);
+                    if (m_player->x0() > m_map->minX) {
+                        m_player->setX0( m_player->x0() - step);
+                    }
                 }
                 if (stickCameraToThePlayer) {
                     moveCamera();
@@ -169,7 +258,9 @@ void Scene::gameTick() {
                     }
                 }
                 if (playerCanRun) {
-                    m_player->setX0( m_player->x0() + step);
+                    if (m_player->x0() + m_player->sizeX < m_map->maxX) {
+                        m_player->setX0( m_player->x0() + step);
+                    }
                 }
                 //m_player->setX0( m_player->x0() + step );
                 if (stickCameraToThePlayer) {
@@ -185,6 +276,12 @@ void Scene::gameTick() {
                     m_player->isPlayerJump = true;
                     emit m_player->jumpButtonPressed(step);
                 }
+            } else if (pressedKeys[i] == Qt::Key_Down) {
+                m_player->setY0(m_player->y0() - step);
+                moveCamera();
+            } else if (pressedKeys[i] == Qt::Key_Up) {
+                m_player->setY0(m_player->y0() + step);
+                moveCamera();
             }
         }
     }
@@ -255,8 +352,6 @@ void Scene::paintGL() {
     matrix.translate(matrixX, matrixY, matrixZ);
     m_program.setUniformValue( m_matrixUniform, matrix );
 
-    m_map->draw();
-
     for(int i = 0; i < m_map->numObjects; i++) {
         m_object[i]->draw();
     }
@@ -273,7 +368,7 @@ void Scene::resizeGL( int w, int h ) {
 void Scene::moveCamera() {
     if (stickCameraToThePlayer) {
         if (m_player->y0() >= 25.0f) {
-            matrixY = -m_player->y0() - 25;
+            matrixY = -m_player->y0() + 25;
         } else {
             matrixY = 0.0f;
         }
@@ -463,6 +558,7 @@ void Scene::keyReleaseEvent( QKeyEvent *event ) {
             }
             break;
         case Qt::Key_Space:
+            m_player->isPlayerJump = false;
             if (pressedKeys.size() == 1) {
                 pressedKeys.remove(0);
             } else {
