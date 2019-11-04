@@ -1,10 +1,9 @@
 <RCC>
     <qresource prefix="/">
         <file>Textures/Blocks.jpg</file>
-        <file>Textures/Ricardo.jpg</file>
         <file>Textures/Grass.jpg</file>
         <file>Textures/Stone.png</file>
         <file>Textures/Mario.png</file>
-        <file>Textures/deadinside.png</file>
+        <file>Textures/NoTexture.png</file>
     </qresource>
 </RCC>

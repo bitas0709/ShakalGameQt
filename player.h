@@ -22,6 +22,12 @@ public:
     float x0() const; //получение текущей координаты X
     float y0() const; //получение текущей координаты Y
 
+    float leftX0() const; //получение текущей координаты X левой стороны
+    float rightX0() const; //получение текущей координаты X правой стороны
+
+    float bottomY0() const; //получение текущей координаты Y ног
+    float topY0() const; //получение текущей координаты Y головы
+
     float startX = 15.0f;
     float startY = 10.0f;
     float sizeX = 2.0f;
@@ -32,16 +38,12 @@ public:
     };
     int CurrentLineOfSightPlayer = LookRight;
 
-    float playerJumpHeight = 15.0f;
+    float playerJumpHeight = 8.0f;
     float playerCoordBeforeJump;
     bool isPlayerJump = false;
 
-    float maxRunSpeed = 3.0f; //максимальная скорость бега
-    float timeOfIncreasingSpeed = 0.5f; //в секундах
-    float RunSpeedIncreaseCoefficient = 0.5f; //не может быть больше максимальной скорости бега игрока
-    float currentPlayerXSpeed = 0.0f; //скорость игрока по оси X
-    float currentPlayerYSpeed = 0.0f; //скорость игрока по оси y
-    float playerWeight = 60.0f; //"вес" игрока
+    float maxRunSpeed = 0.5f; //максимальная скорость бега
+    float runCoefficient = 0.125f;
 
     bool isPlayerOnGround = true;
 

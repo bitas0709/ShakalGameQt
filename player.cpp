@@ -136,6 +136,22 @@ void Player::setY0( float y ) {
     initVertices();
 }
 
+float Player::leftX0() const {
+    return startX;
+}
+
+float Player::rightX0() const {
+    return startX + sizeX;
+}
+
+float Player::bottomY0() const {
+    return startY;
+}
+
+float Player::topY0() const {
+    return startY + sizeY;
+}
+
 float Player::x0() const {
     return startX;
 }

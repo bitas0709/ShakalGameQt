@@ -16,6 +16,9 @@ Object::Object( QOpenGLShaderProgram *program,
         m_texture = new QOpenGLTexture( QImage(":/Textures/Grass.jpg") );
     } else if (ObjectData.at(7).contains("block")) {
         m_texture = new QOpenGLTexture( QImage(":/Textures/Blocks.jpg") );
+    } else {
+        m_texture = new QOpenGLTexture( QImage(":/Textures/NoTexture.png") );
+        qDebug() << "Object references unknown texture";
     }
 }
 

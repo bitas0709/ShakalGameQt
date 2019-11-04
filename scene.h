@@ -25,11 +25,15 @@ signals:
 
     void tick();
     void changePlayerTexture();
+    void playerChangedChunkSignal();
+    void checkPlayerCollisionSignal();
 
 private slots:
 
     void gameTick();
     void moveCamera();
+    void playerChangedChunk();
+    void checkPlayerCollision();
 
 private:
 
@@ -47,6 +51,8 @@ private:
 
     QVector<int> playerChunkNum; //номер чанка, в котором находится игрок
     int objUnderPlayer; //номер объекта, находящегося под игроком
+
+    float highestPointObj = 0.0f;
 
     Player *m_player;
     map *m_map;
