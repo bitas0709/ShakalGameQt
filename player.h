@@ -11,7 +11,7 @@ class Player : public QObject
     Q_OBJECT
 public:
     Player( QOpenGLShaderProgram *program,
-              int vertexAttr, int textureAttr, int textureUniform );
+              int vertexAttr, int textureAttr, int textureUniform, QVector<float> PlayerCoords );
     ~Player();
 
     void draw(); //отрисовка игрока
@@ -30,6 +30,9 @@ public:
 
     float startX = 15.0f;
     float startY = 10.0f;
+    //float startX, startY;
+    //float coordX, coordY;
+    bool gotCoords = false;
     float sizeX = 2.0f;
     float sizeY = 3.0f;
 

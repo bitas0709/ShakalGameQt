@@ -2,6 +2,11 @@
 
 Objects: 5
 
+PlayerCoordX: 15.0
+PlayerCoordY: 10.0
+
+Biome: CastleSurroundings
+
 Object_1 
 {
 
@@ -58,7 +63,7 @@ startX: 25.0
 startY: 5.0
 coordZ: -0.1
 passable: yes
-texture: block
+texture: stone
 
 }
 
@@ -73,6 +78,6 @@ startX: 35.0
 startY: 5.0
 coordZ: 0.1
 passable: no
-texture: stone
+texture: block
 
 }

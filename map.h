@@ -21,6 +21,8 @@ public:
 
     QList<QString> ObjectData[10]; //данные об объектах, считанных из файла
     int numObjects; //количество объектов, считанных из файла
+    QString biome; //название биома карты
+    QVector<float> PlayerCoords; //x и y координаты игрока
 
     void sortObjects(); //сортировка объектов и разнесение их по чанкам
 

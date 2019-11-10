@@ -42,6 +42,16 @@ void map::readDataFromFile( int number ) {
                     realNumOfObjects++;
                     qDebug() << "object" << buff.split("Object_").at(1).toInt();
                     readingObjectData = true;
+                } else if (buff.contains("Biome")) {
+                    biome = buff.split("Biome:").at(1);
+                } else if (buff.contains("PlayerCoordX")) {
+                    if (PlayerCoords.size() == 0) {
+                        PlayerCoords.push_back(buff.split("PlayerCoordX:").at(1).toFloat());
+                    }
+                } else if (buff.contains("PlayerCoordY")) {
+                    if (PlayerCoords.size() == 1) {
+                        PlayerCoords.push_back(buff.split("PlayerCoordY:").at(1).toFloat());
+                    }
                 }
             } else {
                 if (!buff.contains("}")) {
@@ -66,6 +76,7 @@ void map::readDataFromFile( int number ) {
                     }
                 } else {
                     readingObjectData = false;
+                    ObjectData[numObject].push_back(QString::number(numObject)); //8
                     numObject++;
                 }
             }

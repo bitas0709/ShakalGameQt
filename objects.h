@@ -8,11 +8,12 @@
 #include <QString>
 #include <QDebug>
 #include <QList>
+#include <QtMath>
 
 class Object {
 public:
     Object( QOpenGLShaderProgram *program,
-            int vertexAttr, int textureAttr, int textureUniform, QList<QString> ObjectData );
+            int vertexAttr, int textureAttr, int textureUniform, QList<QString> ObjectData, QString biome );
     //Object();
     ~Object();
 
@@ -33,6 +34,9 @@ private:
     int m_textureUniform;
 
     QOpenGLTexture *m_texture;
+
+    int startCropX, startCropY;
+
 };
 
 #endif // OBJECTS_H

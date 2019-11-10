@@ -1,12 +1,18 @@
 #include "player.h"
 
 Player::Player( QOpenGLShaderProgram *program,
-                    int vertexAttr, int textureAttr, int textureUniform ) :
+                    int vertexAttr, int textureAttr, int textureUniform, QVector<float> PlayerCoords ) :
     m_program( program ),
     m_vertexAttr( vertexAttr ),
     m_textureAttr( textureAttr ),
     m_textureUniform( textureUniform )
 {
+
+    if (PlayerCoords.size() == 2) {
+        startX = PlayerCoords.at(0);
+        startY = PlayerCoords.at(1);
+    }
+
     initVertices();
     initTextureCoord();
 

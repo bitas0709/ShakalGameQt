@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <QTimer>
 #include <QMatrix4x4>
+#include <QPainter>
 
 #include "player.h"
 #include "map.h"

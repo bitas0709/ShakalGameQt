@@ -18,6 +18,8 @@ Scene::~Scene()
 }
 
 void Scene::gameTick() {
+    //qDebug() << "isPlayerJump =" << m_player->isPlayerJump;
+    //qDebug() << "isPlayerOnGround =" << m_player->isPlayerOnGround;
     if (!m_player->isPlayerJump) {
         if (m_player->bottomY0() - 0.1f > highestPointObj) {
             m_player->isPlayerOnGround = false;
@@ -27,6 +29,7 @@ void Scene::gameTick() {
     }
     if (!m_player->isPlayerOnGround) {
         //emit m_player->jumpButtonPressed(step);
+        moveCamera();
         if (!m_player->isPlayerJump) {
             if (m_player->bottomY0() > 0) {
                 m_player->setY0(m_player->bottomY0() - step);
@@ -208,7 +211,7 @@ void Scene::gameTick() {
                 }
                 moveCamera();
             } else if (pressedKeys[i] == Qt::Key_Down) {
-                m_player->setY0(m_player->bottomY0() - step);
+                //m_player->setY0(m_player->bottomY0() - step);
                 moveCamera();
             } else if (pressedKeys[i] == Qt::Key_Up) {
                 m_player->setY0(m_player->bottomY0() + step);
@@ -377,12 +380,12 @@ void Scene::initializeGL() {
     m_textureUniform = m_program.uniformLocation( "textureUniform" );
     m_matrixUniform = m_program.uniformLocation( "matrix" );
 
-    m_player = new Player( &m_program, m_vertexAttr, m_textureAttr, m_textureUniform );
-    connect(m_player, SIGNAL(jumpButtonPressed(float)), m_player, SLOT(playerJump(float)));
     m_map = new map();
     for (int i = 0; i < m_map->numObjects; i++) {
-        m_object[i] = new Object( &m_program, m_vertexAttr, m_textureAttr, m_textureUniform, m_map->ObjectData[i]);
+        m_object[i] = new Object( &m_program, m_vertexAttr, m_textureAttr, m_textureUniform, m_map->ObjectData[i], m_map->biome);
     }
+    m_player = new Player( &m_program, m_vertexAttr, m_textureAttr, m_textureUniform, m_map->PlayerCoords );
+    connect(m_player, SIGNAL(jumpButtonPressed(float)), m_player, SLOT(playerJump(float)));
 
     connect(doTick, SIGNAL(timeout()), SLOT(gameTick()));
     connect(this, SIGNAL(changePlayerTexture()), m_player, SLOT(changePlayerTexture()));

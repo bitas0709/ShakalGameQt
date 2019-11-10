@@ -1,7 +1,9 @@
 #include "objects.h"
 
+
+
 Object::Object( QOpenGLShaderProgram *program,
-                int vertexAttr, int textureAttr, int textureUniform, QList<QString> ObjectData ):
+                int vertexAttr, int textureAttr, int textureUniform, QList<QString> ObjectData, QString biome ):
     m_program( program ),
     m_vertexAttr( vertexAttr ),
     m_textureAttr( textureAttr ),
@@ -10,12 +12,52 @@ Object::Object( QOpenGLShaderProgram *program,
     initVertices( ObjectData );
     initTextureCoords();
 
+    QImage origImage(":/Textures/Tilesets/Environment.png");
+
+    QImage objectTexture(16 * int(ObjectData.at(1).toFloat()), 16 * int(ObjectData.at(2).toFloat()), QImage::Format_RGB32);
+    for (int i = 0; i < objectTexture.height(); i++) {
+        for (int j = 0; j < objectTexture.width(); j++) {
+            objectTexture.setPixel(j, i, origImage.pixel(j % 16, i % 16));
+        }
+    }
+    QString resultName = "resultTexture";
+    resultName.append(ObjectData.at(8));
+    resultName.append(".png");
+    if (!objectTexture.save(resultName, "PNG")) {
+        qDebug() << "Все плохо";
+    } else {
+        qDebug() << "Ищи";
+    }
+
+    if (qFuzzyCompare(ObjectData.at(1).toFloat() - ObjectData.at(1).toInt(), 0) &&
+            qFuzzyCompare(ObjectData.at(3).toFloat() - ObjectData.at(3).toInt(), 0)) {
+        if (qFuzzyCompare(ObjectData.at(2).toFloat() - ObjectData.at(2).toInt(), 0) &&
+                qFuzzyCompare(ObjectData.at(4).toFloat() - ObjectData.at(4).toInt(), 0)) {
+
+            if (biome == "CastleSurroundings") {
+                if (ObjectData.at(7).contains("stone")) {
+
+                    //m_texture = new QOpenGLTexture( objectTexture );
+                }
+            } else if (biome == "Castle") {
+
+            } else if (biome == "Underground") {
+
+            } else if (biome == "Underwater") {
+
+            }
+        }
+    }
+
     if (ObjectData.at(7).contains("stone")) {
-        m_texture = new QOpenGLTexture( QImage(":/Textures/Stone.png") );
+        //m_texture = new QOpenGLTexture( QImage(":/Textures/Stone.png") );
+        m_texture = new QOpenGLTexture( QImage(objectTexture) );
     } else if (ObjectData.at(7).contains("grass")) {
         m_texture = new QOpenGLTexture( QImage(":/Textures/Grass.jpg") );
     } else if (ObjectData.at(7).contains("block")) {
         m_texture = new QOpenGLTexture( QImage(":/Textures/Blocks.jpg") );
+    } else if (ObjectData.at(7).contains("mario")) {
+        m_texture = new QOpenGLTexture( QImage(":/Textures/Mario.png") );
     } else {
         m_texture = new QOpenGLTexture( QImage(":/Textures/NoTexture.png") );
         qDebug() << "Object references unknown texture";
