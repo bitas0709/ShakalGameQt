@@ -29,24 +29,28 @@ Object::Object( QOpenGLShaderProgram *program,
         qDebug() << "Ищи";
     }
 
-    if (qFuzzyCompare(ObjectData.at(1).toFloat() - ObjectData.at(1).toInt(), 0) &&
-            qFuzzyCompare(ObjectData.at(3).toFloat() - ObjectData.at(3).toInt(), 0)) {
-        if (qFuzzyCompare(ObjectData.at(2).toFloat() - ObjectData.at(2).toInt(), 0) &&
-                qFuzzyCompare(ObjectData.at(4).toFloat() - ObjectData.at(4).toInt(), 0)) {
+    if (biome == "Overworld") {
 
-            if (biome == "CastleSurroundings") {
-                if (ObjectData.at(7).contains("stone")) {
+    } else if (biome == "CastleUnderground") {
 
-                    //m_texture = new QOpenGLTexture( objectTexture );
-                }
-            } else if (biome == "Castle") {
+    } else if (biome == "Castle") {
 
-            } else if (biome == "Underground") {
+    } else if (biome == "Plains") {
 
-            } else if (biome == "Underwater") {
+    }
 
-            }
+    if (ObjectData.at(7).contains("Block")) {
+        if (biome == "Overworld") {
+
         }
+    } else if (ObjectData.at(7).contains("TopBrick")) {
+
+    } else if (ObjectData.at(7).contains("Brick2")) {
+
+    } else if (ObjectData.at(7).contains("EmptyBox")) {
+
+    } else if (ObjectData.at(7).contains("Fence")) {
+
     }
 
     if (ObjectData.at(7).contains("stone")) {
@@ -56,8 +60,6 @@ Object::Object( QOpenGLShaderProgram *program,
         m_texture = new QOpenGLTexture( QImage(":/Textures/Grass.jpg") );
     } else if (ObjectData.at(7).contains("block")) {
         m_texture = new QOpenGLTexture( QImage(":/Textures/Blocks.jpg") );
-    } else if (ObjectData.at(7).contains("mario")) {
-        m_texture = new QOpenGLTexture( QImage(":/Textures/Mario.png") );
     } else {
         m_texture = new QOpenGLTexture( QImage(":/Textures/NoTexture.png") );
         qDebug() << "Object references unknown texture";
