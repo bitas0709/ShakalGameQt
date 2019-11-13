@@ -20,8 +20,9 @@ Scene::~Scene()
 void Scene::gameTick() {
     //qDebug() << "isPlayerJump =" << m_player->isPlayerJump;
     //qDebug() << "isPlayerOnGround =" << m_player->isPlayerOnGround;
+    //qDebug() << "player at Y =" << m_player->bottomY0();
     if (!m_player->isPlayerJump) {
-        if (m_player->bottomY0() - 0.1f > highestPointObj) {
+        if (m_player->bottomY0() > highestPointObj) {
             m_player->isPlayerOnGround = false;
         } else {
             m_player->isPlayerOnGround = true;
@@ -282,7 +283,7 @@ void Scene::checkPlayerCollision() {
         //qDebug() << tempObjUndPointsPlayer;
         for (int i = 0; i < tempObjUndPointsPlayer.size(); i++) { //удаление номеров объектов, которые выше ног игрока
             if (m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(4).toFloat() +
-                    m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(2).toFloat() > m_player->bottomY0()) {
+                    m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(2).toFloat() > m_player->bottomY0() + 0.1f) {
                 tempObjUndPointsPlayer.remove(i);
             }
         }
@@ -328,7 +329,7 @@ void Scene::checkPlayerCollision() {
         //qDebug() << tempObjUndPointsPlayer;
         for (int i = 0; i < tempObjUndPointsPlayer.size(); i++) { //удаление номеров объектов, которые выше ног игрока
             if (m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(4).toFloat() +
-                    m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(2).toFloat() > m_player->bottomY0()) {
+                    m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(2).toFloat() > m_player->bottomY0() + 0.1f) {
                 tempObjUndPointsPlayer.remove(i);
             }
         }

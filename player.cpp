@@ -113,6 +113,7 @@ void Player::initTextureCoord() {
     // 5
     m_textureCoords[10] = 1.0f;
     m_textureCoords[11] = 0.0f;
+
 }
 
 void Player::playerJump(float step) {

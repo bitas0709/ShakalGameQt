@@ -1,6 +1,6 @@
 //Объекты всегда рисуются сверху вниз и слева направо
 
-Objects: 5
+Objects: 6
 
 PlayerCoordX: 15.0
 PlayerCoordY: 10.0
@@ -18,7 +18,7 @@ startX: 0.0
 startY: 3.0
 coordZ: 1.0
 passable: no
-texture: stone
+texture: TopBrick
 
 }
 
@@ -33,7 +33,7 @@ startX: 10.0
 startY: 0.0
 coordZ: 0.0
 passable: no
-texture: grass
+texture: Block
 
 }
 
@@ -48,7 +48,7 @@ startX: 1.0
 startY: 4.0
 coordZ: 0.1
 passable: no
-texture: block
+texture: EmptyBox
 
 }
 
@@ -62,8 +62,8 @@ sizeY: 6.0
 startX: 25.0
 startY: 5.0
 coordZ: -0.1
-passable: yes
-texture: stone
+passable: no
+texture: Brick2
 
 }
 
@@ -72,12 +72,27 @@ Object_5
 
 id: 4
 type: wall
-sizeX: 2.0
-sizeY: 6.0
+sizeX: 6.0
+sizeY: 1.0
 startX: 35.0
 startY: 5.0
 coordZ: 0.1
+passable: yes
+texture: Fence
+
+}
+
+Object_6
+{
+
+id: 5
+type: wall
+sizeX: 5.0
+sizeY: 1.0
+startX: 32.0
+startY: 10.0
+coordZ: 0.0
 passable: no
-texture: block
+texture: TopBrick
 
 }

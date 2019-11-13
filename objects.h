@@ -35,7 +35,7 @@ private:
 
     QOpenGLTexture *m_texture;
 
-    int startCropX, startCropY;
+    int startCropX = 0, startCropY = 0;
 
 };
 

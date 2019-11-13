@@ -14,7 +14,7 @@ Object::Object( QOpenGLShaderProgram *program,
 
     QImage origImage(":/Textures/Tilesets/Environment.png");
 
-    QImage objectTexture(16 * int(ObjectData.at(1).toFloat()), 16 * int(ObjectData.at(2).toFloat()), QImage::Format_RGB32);
+    /*QImage objectTexture(16 * int(ObjectData.at(1).toFloat()), 16 * int(ObjectData.at(2).toFloat()), QImage::Format_RGB32);
     for (int i = 0; i < objectTexture.height(); i++) {
         for (int j = 0; j < objectTexture.width(); j++) {
             objectTexture.setPixel(j, i, origImage.pixel(j % 16, i % 16));
@@ -27,33 +27,75 @@ Object::Object( QOpenGLShaderProgram *program,
         qDebug() << "Все плохо";
     } else {
         qDebug() << "Ищи";
-    }
+    } */
 
     if (biome == "Overworld") {
-
+        startCropY = 0;
     } else if (biome == "CastleUnderground") {
-
+        startCropY = 32;
     } else if (biome == "Castle") {
-
+        startCropY = 64;
     } else if (biome == "Plains") {
-
+        startCropY = 96;
     }
+
+    QRect rect;
 
     if (ObjectData.at(7).contains("Block")) {
-        if (biome == "Overworld") {
-
+        startCropX = 0;
+        rect = QRect(startCropX, startCropY, 16, 16);
+        QImage objectTexture(16 * int(ObjectData.at(1).toFloat()), 16 * int(ObjectData.at(2).toFloat()), QImage::Format_RGB32);
+        for (int i = 0; i < objectTexture.height(); i++) {
+            for (int j = 0; j < objectTexture.width(); j++) {
+                objectTexture.setPixel(j, i, origImage.pixel(startCropX + j % 16, startCropY + i % 16));
+            }
         }
+        m_texture = new QOpenGLTexture( QImage(objectTexture) );
     } else if (ObjectData.at(7).contains("TopBrick")) {
-
+        startCropX = 16;
+        rect = QRect(startCropX, startCropY, 16, 16);
+        QImage objectTexture(16 * int(ObjectData.at(1).toFloat()), 16 * int(ObjectData.at(2).toFloat()), QImage::Format_RGB32);
+        for (int i = 0; i < objectTexture.height(); i++) {
+            for (int j = 0; j < objectTexture.width(); j++) {
+                objectTexture.setPixel(j, i, origImage.pixel(startCropX + j % 16, startCropY + i % 16));
+            }
+        }
+        m_texture = new QOpenGLTexture( QImage(objectTexture) );
     } else if (ObjectData.at(7).contains("Brick2")) {
-
+        startCropX = 32;
+        rect = QRect(startCropX, startCropY, 16, 16);
+        QImage objectTexture(16 * int(ObjectData.at(1).toFloat()), 16 * int(ObjectData.at(2).toFloat()), QImage::Format_RGB32);
+        for (int i = 0; i < objectTexture.height(); i++) {
+            for (int j = 0; j < objectTexture.width(); j++) {
+                objectTexture.setPixel(j, i, origImage.pixel(startCropX + j % 16, startCropY + i % 16));
+            }
+        }
+        m_texture = new QOpenGLTexture( QImage(objectTexture) );
     } else if (ObjectData.at(7).contains("EmptyBox")) {
-
+        startCropX = 48;
+        rect = QRect(startCropX, startCropY, 16, 16);
+        QImage objectTexture(16 * int(ObjectData.at(1).toFloat()), 16 * int(ObjectData.at(2).toFloat()), QImage::Format_RGB32);
+        for (int i = 0; i < objectTexture.height(); i++) {
+            for (int j = 0; j < objectTexture.width(); j++) {
+                objectTexture.setPixel(j, i, origImage.pixel(startCropX + j % 16, startCropY + i % 16));
+            }
+        }
+        m_texture = new QOpenGLTexture( QImage(objectTexture) );
     } else if (ObjectData.at(7).contains("Fence")) {
-
+        startCropX = 80;
+        rect = QRect(startCropX, startCropY, 16, 16);
+        QImage objectTexture(16 * int(ObjectData.at(1).toFloat()), 16 * int(ObjectData.at(2).toFloat()), QImage::Format_ARGB32);
+        for (int i = 0; i < objectTexture.height(); i++) {
+            for (int j = 0; j < objectTexture.width(); j++) {
+                objectTexture.setPixel(j, i, origImage.pixel(startCropX + j % 16, startCropY + i % 16));
+            }
+        }
+        m_texture = new QOpenGLTexture( QImage(objectTexture) );
+    } else {
+        m_texture = new QOpenGLTexture( QImage(":/Textures/NoTexture.png") );
+        qDebug() << "Object references unknown texture";
     }
-
-    if (ObjectData.at(7).contains("stone")) {
+    /*if (ObjectData.at(7).contains("stone")) {
         //m_texture = new QOpenGLTexture( QImage(":/Textures/Stone.png") );
         m_texture = new QOpenGLTexture( QImage(objectTexture) );
     } else if (ObjectData.at(7).contains("grass")) {
@@ -63,7 +105,7 @@ Object::Object( QOpenGLShaderProgram *program,
     } else {
         m_texture = new QOpenGLTexture( QImage(":/Textures/NoTexture.png") );
         qDebug() << "Object references unknown texture";
-    }
+    }*/
 }
 
 Object::~Object() {
@@ -109,27 +151,28 @@ void Object::initTextureCoords() {
 
     //0
     m_textureCoords[0] = 0.0f;
-    m_textureCoords[1] = 0.0f;
+    m_textureCoords[1] = 1.0f;
 
     // 1
     m_textureCoords[2] = 1.0f;
-    m_textureCoords[3] = 0.0f;
+    m_textureCoords[3] = 1.0f;
 
     // 2
     m_textureCoords[4] = 0.0f;
-    m_textureCoords[5] = 1.0f;
+    m_textureCoords[5] = 0.0f;
 
     // 3
     m_textureCoords[6] = 0.0f;
-    m_textureCoords[7] = 1.0f;
+    m_textureCoords[7] = 0.0f;
 
     // 4
     m_textureCoords[8] = 1.0f;
-    m_textureCoords[9] = 0.0f;
+    m_textureCoords[9] = 1.0f;
 
     // 5
     m_textureCoords[10] = 1.0f;
-    m_textureCoords[11] = 1.0f;
+    m_textureCoords[11] = 0.0f;
+
 }
 
 void Object::draw() {
