@@ -14,21 +14,6 @@ Object::Object( QOpenGLShaderProgram *program,
 
     QImage origImage(":/Textures/Tilesets/Environment.png");
 
-    /*QImage objectTexture(16 * int(ObjectData.at(1).toFloat()), 16 * int(ObjectData.at(2).toFloat()), QImage::Format_RGB32);
-    for (int i = 0; i < objectTexture.height(); i++) {
-        for (int j = 0; j < objectTexture.width(); j++) {
-            objectTexture.setPixel(j, i, origImage.pixel(j % 16, i % 16));
-        }
-    }
-    QString resultName = "resultTexture";
-    resultName.append(ObjectData.at(8));
-    resultName.append(".png");
-    if (!objectTexture.save(resultName, "PNG")) {
-        qDebug() << "Все плохо";
-    } else {
-        qDebug() << "Ищи";
-    } */
-
     if (biome == "Overworld") {
         startCropY = 0;
     } else if (biome == "CastleUnderground") {
@@ -95,17 +80,6 @@ Object::Object( QOpenGLShaderProgram *program,
         m_texture = new QOpenGLTexture( QImage(":/Textures/NoTexture.png") );
         qDebug() << "Object references unknown texture";
     }
-    /*if (ObjectData.at(7).contains("stone")) {
-        //m_texture = new QOpenGLTexture( QImage(":/Textures/Stone.png") );
-        m_texture = new QOpenGLTexture( QImage(objectTexture) );
-    } else if (ObjectData.at(7).contains("grass")) {
-        m_texture = new QOpenGLTexture( QImage(":/Textures/Grass.jpg") );
-    } else if (ObjectData.at(7).contains("block")) {
-        m_texture = new QOpenGLTexture( QImage(":/Textures/Blocks.jpg") );
-    } else {
-        m_texture = new QOpenGLTexture( QImage(":/Textures/NoTexture.png") );
-        qDebug() << "Object references unknown texture";
-    }*/
 }
 
 Object::~Object() {

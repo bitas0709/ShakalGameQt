@@ -11,7 +11,7 @@ class Player : public QObject
     Q_OBJECT
 public:
     Player( QOpenGLShaderProgram *program,
-              int vertexAttr, int textureAttr, int textureUniform, QVector<float> PlayerCoords );
+              int vertexAttr, int textureAttr, int textureUniform, QVector<float> PlayerCoords, int playerNumber );
     ~Player();
 
     void draw(); //отрисовка игрока
@@ -28,18 +28,24 @@ public:
     float bottomY0() const; //получение текущей координаты Y ног
     float topY0() const; //получение текущей координаты Y головы
 
+    QVector<int> ChunkNumber; //номер(а) чанка, в котором находится игрок
+
     float startX = 15.0f;
     float startY = 10.0f;
     //float startX, startY;
     //float coordX, coordY;
     bool gotCoords = false;
-    float sizeX = 2.0f;
-    float sizeY = 3.0f;
+    float sizeX = 1.0f;
+    float sizeY = 1.7f;
 
     enum EnumLineOfSightPlayer { //направление взгляда игрока
         LookLeft, LookRight
     };
     int CurrentLineOfSightPlayer = LookRight;
+
+    enum MoveDirection {
+        Up, Left, Right
+    };
 
     float playerJumpHeight = 8.0f;
     float playerCoordBeforeJump;
@@ -53,6 +59,7 @@ public:
 signals:
 
     void jumpButtonPressed(float);
+    void checkColl(MoveDirection, float, float, float, float);
 
 private slots:
 
@@ -74,15 +81,6 @@ private:
 
     QOpenGLTexture *m_texture;
 
-    //float CoordX;
-    //float CoordY;
-
-    //float m_x0;
-    //float m_y0;
-    //float m_size;
-
-    float CenterCoordX = (startX + sizeX) / 2.0f;
-    float CenterCoordY = (startY + sizeY) / 2.0f;
 };
 
 #endif // TRIANGLE_H

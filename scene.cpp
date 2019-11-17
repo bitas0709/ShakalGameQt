@@ -10,7 +10,7 @@ Scene::Scene( QWidget *parent ) :
 Scene::~Scene()
 {
     makeCurrent();
-    delete m_player;
+    //delete m_player;
     for (int i = 0; i < m_map->numObjects; i++) {
         delete m_object[i];
     }
@@ -18,9 +18,7 @@ Scene::~Scene()
 }
 
 void Scene::gameTick() {
-    //qDebug() << "isPlayerJump =" << m_player->isPlayerJump;
-    //qDebug() << "isPlayerOnGround =" << m_player->isPlayerOnGround;
-    //qDebug() << "player at Y =" << m_player->bottomY0();
+    /*qDebug() << "playerCoordY =" << m_player->bottomY0();
     if (!m_player->isPlayerJump) {
         if (m_player->bottomY0() > highestPointObj) {
             m_player->isPlayerOnGround = false;
@@ -202,6 +200,7 @@ void Scene::gameTick() {
                     emit changePlayerTexture();
                 }
             } else if (pressedKeys[i] == Qt::Key_Space) {
+                emit m_player->checkColl(m_player->MoveDirection::Left, m_player->leftX0(), m_player->rightX0(), m_player->bottomY0(), m_player->topY0());
                 if (m_player->isPlayerOnGround) {
                     //m_player->setY0(m_player->bottomY0() + step);
                     if (!m_player->isPlayerJump) {
@@ -221,11 +220,11 @@ void Scene::gameTick() {
         }
     }
     //qDebug() << "NumObject =" << CurrentObjNumPlayer.at(0);
-    update();
+    update();*/
 }
 
 void Scene::playerChangedChunk() {
-    if (qCeil(qreal(m_player->leftX0() / m_map->chunkSize)) == qCeil(qreal(m_player->rightX0() / m_map->chunkSize))) {
+    /*if (qCeil(qreal(m_player->leftX0() / m_map->chunkSize)) == qCeil(qreal(m_player->rightX0() / m_map->chunkSize))) {
         if (playerChunkNum.size() == 1) {
             if (playerChunkNum.at(0) != qCeil(qreal(m_player->leftX0() / m_map->chunkSize))) {
                 playerChunkNum.remove(0);
@@ -257,12 +256,104 @@ void Scene::playerChangedChunk() {
         } else {
             qDebug() << "Something wrong, I can feel it";
         }
+    }*/
+}
+
+void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, float bottomY, float topY, float speed) {
+
+    QString objectName = this->sender()->objectName();
+
+    QVector<int> tempAllObjects; //номера всех объектов рядом и по пути от существа
+    QVector<int> tempObjUnder; //временный вектор с номерами объектов под проверяемым существом
+    QVector<int> tempObjOnLevel; //временный вектор с номерами объектов на уровне существа
+    QVector<int> tempObjAbove; //временный вектор с номерами объектов выше проверяемого существа
+    float distanceToNearestObj = 999.0f; //расстояние до ближайшего объекта
+    int leftChunkNum = qCeil(qreal(leftX / m_map->chunkSize));
+    int rightChunkNum = qCeil(qreal(rightX / m_map->chunkSize));
+    int checkFromThisChunk = 0;
+    int checkToThisChunk = 0;
+
+    //здесь происходит проверка, не находится ли существо на краю карты
+    if (leftChunkNum > 0 && rightChunkNum < m_map->countChunks) {
+        checkFromThisChunk = leftChunkNum - 1;
+        checkToThisChunk = rightChunkNum + 1;
+    } else if (rightChunkNum == m_map->countChunks) {
+        checkFromThisChunk = leftChunkNum - 1;
+        checkToThisChunk = rightChunkNum;
+    } else if (leftChunkNum == 0) {
+        checkFromThisChunk = leftChunkNum;
+        checkToThisChunk = rightChunkNum + 1;
     }
+
+    //далее происходит запись всех объектов, которые находятся в проверяемых чанках
+    for (int i = checkFromThisChunk; i <= checkToThisChunk; i++) {
+        for (int j = 0; j < m_map->ChunkList[i].size(); j++) {
+            if (!tempAllObjects.contains(m_map->ChunkList[i].at(j))) {
+                tempAllObjects.push_back(m_map->ChunkList[i].at(j));
+            }
+        }
+    }
+
+    //разнесение объектов
+    for (int i = 0; i < tempAllObjects.size(); i++) {
+        if (m_map->ObjectData->at(4).toFloat() + m_map->ObjectData->at(2).toFloat() <= bottomY) {
+            tempObjUnder.push_back(tempAllObjects.at(i)); //запись объектов ниже ног существа
+        } else if (m_map->ObjectData->at(4).toFloat() < topY &&
+                   m_map->ObjectData->at(4).toFloat() + m_map->ObjectData->at(2).toFloat() > bottomY) {
+            tempObjOnLevel.push_back(tempAllObjects.at(i)); //запись объектов на уровне существа
+        } else if (m_map->ObjectData->at(4).toFloat() > topY) {
+            tempObjAbove.push_back(tempAllObjects.at(i)); //запись объектов выше головы существа
+        }
+    }
+
+    switch(direction) {
+    case MoveDirection::Left: {
+        QVector<int> LeftObjects; //номера объектов, которые находятся левее существа
+        for (int i = 0; i < tempObjOnLevel.size(); i++) {
+            if (m_map->ObjectData[tempObjOnLevel.at(i)].at(4).toFloat() + m_map->ObjectData[tempObjOnLevel.at(i)].at(2).toFloat() <
+                    leftX) {
+                LeftObjects.push_back(tempObjOnLevel.at(i));
+            }
+        }
+        for (int i = 0; i < LeftObjects.size(); i++) {
+            if (leftX - (m_map->ObjectData[LeftObjects.at(i)].at(4).toFloat() + m_map->ObjectData[LeftObjects.at(i)].at(2).toFloat())
+                    < distanceToNearestObj) {
+                distanceToNearestObj = leftX - (m_map->ObjectData[LeftObjects.at(i)].at(4).toFloat() + m_map->ObjectData[LeftObjects.at(i)].at(2).toFloat());
+            }
+        }
+        if (speed > distanceToNearestObj) {
+            speed = distanceToNearestObj;
+        }
+        break;
+    }
+    case MoveDirection::Right: {
+        QVector<int> RightObjects;
+        for(int i = 0; i < tempObjOnLevel.size(); i++) {
+            if (m_map->ObjectData[tempObjOnLevel.at(i)].at(4).toFloat() > rightX) {
+                RightObjects.push_back(tempObjOnLevel.at(i));
+            }
+        }
+        for (int i = 0; i < RightObjects.size(); i++) {
+            if (m_map->ObjectData[RightObjects.at(i)].at(4).toFloat() - rightX < distanceToNearestObj) {
+                distanceToNearestObj = m_map->ObjectData[RightObjects.at(i)].at(4).toFloat() - rightX;
+            }
+        }
+        if (speed > distanceToNearestObj) {
+            speed = distanceToNearestObj;
+        }
+        break;
+    }
+    case MoveDirection::Up: {
+        break;
+    }
+    }
+
 }
 
 void Scene::checkPlayerCollision() {
-    highestPointObj = 0.0f;
+    /*highestPointObj = 0.0f;
     QVector<int> tempObjUndPointsPlayer;
+    objectsAbovePlayer.clear();
     if (playerChunkNum.size() == 1) {
         for (int i = 0; i < m_map->ChunkList[playerChunkNum.at(0)].size(); i++) {
             if (m_map->ObjectData[m_map->ChunkList[playerChunkNum.at(0)].at(i)].at(3).toFloat() < m_player->leftX0() && //поиск объектов под левой точкой игрока
@@ -284,6 +375,7 @@ void Scene::checkPlayerCollision() {
         for (int i = 0; i < tempObjUndPointsPlayer.size(); i++) { //удаление номеров объектов, которые выше ног игрока
             if (m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(4).toFloat() +
                     m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(2).toFloat() > m_player->bottomY0() + 0.1f) {
+                objectsAbovePlayer.push_back(tempObjUndPointsPlayer.at(i));
                 tempObjUndPointsPlayer.remove(i);
             }
         }
@@ -330,6 +422,7 @@ void Scene::checkPlayerCollision() {
         for (int i = 0; i < tempObjUndPointsPlayer.size(); i++) { //удаление номеров объектов, которые выше ног игрока
             if (m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(4).toFloat() +
                     m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(2).toFloat() > m_player->bottomY0() + 0.1f) {
+                objectsAbovePlayer.push_back(tempObjUndPointsPlayer.at(i));
                 tempObjUndPointsPlayer.remove(i);
             }
         }
@@ -340,7 +433,30 @@ void Scene::checkPlayerCollision() {
                         m_map->ObjectData[tempObjUndPointsPlayer.at(i)].at(2).toFloat();
             }
         }
+    }*/
+}
+
+void Scene::startGameSlot() {
+    m_map = new map();
+    for (int i = 0; i < m_map->numObjects; i++) {
+        m_object[i] = new Object( &m_program, m_vertexAttr, m_textureAttr, m_textureUniform, m_map->ObjectData[i], m_map->biome);
     }
+    if (GameMode == GameModeState::Single) {
+        m_player[0] = new Player( &m_program, m_vertexAttr, m_textureAttr, m_textureUniform, m_map->PlayerCoords, 0 );
+        connect(m_player[0], SIGNAL(jumpButtonPressed(float)), m_player[0], SLOT(playerJump(float)));
+        connect(this, SIGNAL(changePlayerTexture()), m_player[0], SLOT(changePlayerTexture()));
+    } else {
+
+    }
+
+    connect(doTick, SIGNAL(timeout()), SLOT(gameTick()));
+    connect(this, SIGNAL(playerChangedChunkSignal()), SLOT(playerChangedChunk()));
+    connect(this, SIGNAL(checkPlayerCollisionSignal()), SLOT(checkPlayerCollision()));
+
+    emit playerChangedChunkSignal();
+    emit checkPlayerCollisionSignal();
+
+    doTick->start(tickTime);
 }
 
 void Scene::initializeGL() {
@@ -381,22 +497,8 @@ void Scene::initializeGL() {
     m_textureUniform = m_program.uniformLocation( "textureUniform" );
     m_matrixUniform = m_program.uniformLocation( "matrix" );
 
-    m_map = new map();
-    for (int i = 0; i < m_map->numObjects; i++) {
-        m_object[i] = new Object( &m_program, m_vertexAttr, m_textureAttr, m_textureUniform, m_map->ObjectData[i], m_map->biome);
-    }
-    m_player = new Player( &m_program, m_vertexAttr, m_textureAttr, m_textureUniform, m_map->PlayerCoords );
-    connect(m_player, SIGNAL(jumpButtonPressed(float)), m_player, SLOT(playerJump(float)));
-
-    connect(doTick, SIGNAL(timeout()), SLOT(gameTick()));
-    connect(this, SIGNAL(changePlayerTexture()), m_player, SLOT(changePlayerTexture()));
-    connect(this, SIGNAL(playerChangedChunkSignal()), SLOT(playerChangedChunk()));
-    connect(this, SIGNAL(checkPlayerCollisionSignal()), SLOT(checkPlayerCollision()));
-
-    emit playerChangedChunkSignal();
-    emit checkPlayerCollisionSignal();
-
-    doTick->start(tickTime);
+    connect(this, SIGNAL(startGame()), SLOT(startGameSlot()));
+    emit startGame();
 }
 
 void Scene::paintGL() {
@@ -416,7 +518,9 @@ void Scene::paintGL() {
         m_object[i]->draw();
     }
 
-    m_player->draw();
+    if (GameMode == GameModeState::Single) {
+        m_player[0]->draw();
+    }
 
     m_program.release();
 }
@@ -426,7 +530,7 @@ void Scene::resizeGL( int w, int h ) {
 }
 
 void Scene::moveCamera() {
-    if (stickCameraToThePlayer) {
+    /*if (stickCameraToThePlayer) {
         if (m_player->bottomY0() >= 25.0f) {
             matrixY = -m_player->bottomY0() + 25;
         } else {
@@ -437,7 +541,7 @@ void Scene::moveCamera() {
         } else if (m_player->leftX0() <= cameraSizeX / 2 - cameraSizeX / 4 - matrixX) {
             matrixX += step;
         }
-    }
+    }*/
 }
 
 void Scene::keyPressEvent( QKeyEvent *event ) {
@@ -618,7 +722,7 @@ void Scene::keyReleaseEvent( QKeyEvent *event ) {
             }
             break;
         case Qt::Key_Space:
-            m_player->isPlayerJump = false;
+            //m_player->isPlayerJump = false;
             if (pressedKeys.size() == 1) {
                 pressedKeys.remove(0);
             } else {

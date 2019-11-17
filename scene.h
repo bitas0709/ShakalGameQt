@@ -10,6 +10,7 @@
 #include <QTimer>
 #include <QMatrix4x4>
 #include <QPainter>
+#include <QtGlobal>
 
 #include "player.h"
 #include "map.h"
@@ -22,8 +23,18 @@ public:
     Scene( QWidget *parent = nullptr );
     ~Scene();
 
+    //направление "вниз" указывать не надо, так как оно будет проверяться в любом случае
+    enum MoveDirection {
+        Up, Left, Right
+    };
+
+    enum GameModeState {
+        Single, Multiplayer
+    };
+
 signals:
 
+    void startGame();
     void tick();
     void changePlayerTexture();
     void playerChangedChunkSignal();
@@ -31,10 +42,13 @@ signals:
 
 private slots:
 
+    void startGameSlot();
     void gameTick();
     void moveCamera();
     void playerChangedChunk();
     void checkPlayerCollision();
+
+    void checkCollision(MoveDirection, float leftX, float rightX, float bottomY, float topY, float speed);
 
 private:
 
@@ -51,11 +65,13 @@ private:
     //по умолчанию 16
 
     QVector<int> playerChunkNum; //номер чанка, в котором находится игрок
-    int objUnderPlayer; //номер объекта, находящегося под игроком
+    //int objUnderPlayer; //номер объекта, находящегося под игроком
 
     float highestPointObj = 0.0f;
+    QVector<int> objectsAbovePlayer;
 
-    Player *m_player;
+    int GameMode = GameModeState::Single; //убрать, когда появится мультиплеер
+    Player *m_player[4];
     map *m_map;
     Object *m_object[2000];
     QOpenGLShaderProgram m_program;

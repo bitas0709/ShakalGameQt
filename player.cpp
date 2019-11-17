@@ -1,12 +1,17 @@
 #include "player.h"
 
 Player::Player( QOpenGLShaderProgram *program,
-                    int vertexAttr, int textureAttr, int textureUniform, QVector<float> PlayerCoords ) :
+                    int vertexAttr, int textureAttr, int textureUniform, QVector<float> PlayerCoords, int playerNumber ) :
     m_program( program ),
     m_vertexAttr( vertexAttr ),
     m_textureAttr( textureAttr ),
     m_textureUniform( textureUniform )
 {
+    QString objectName;
+    objectName = "player";
+    objectName += char(playerNumber);
+
+    this->setObjectName(objectName);
 
     if (PlayerCoords.size() == 2) {
         startX = PlayerCoords.at(0);
