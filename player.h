@@ -29,6 +29,7 @@ public:
     float topY0() const; //получение текущей координаты Y головы
 
     QVector<int> ChunkNumber; //номер(а) чанка, в котором находится игрок
+    QString objectName;
 
     float startX = 15.0f;
     float startY = 10.0f;
@@ -44,13 +45,16 @@ public:
     int CurrentLineOfSightPlayer = LookRight;
 
     enum MoveDirection {
-        Up, Left, Right
+        Up, Down, Left, Right
     };
 
     float playerJumpHeight = 8.0f;
     float playerCoordBeforeJump;
     bool isPlayerJump = false;
 
+    //float runSpeed = 0.0f;
+    //runSpeed(Up, Down, Left, Right);
+    QVector<float> runSpeed = {0.0f, 0.0f, 0.0f, 0.0f};
     float maxRunSpeed = 0.5f; //максимальная скорость бега
     float runCoefficient = 0.125f;
 

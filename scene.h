@@ -25,7 +25,7 @@ public:
 
     //направление "вниз" указывать не надо, так как оно будет проверяться в любом случае
     enum MoveDirection {
-        Up, Left, Right
+        Up, Down, Left, Right
     };
 
     enum GameModeState {
@@ -48,7 +48,7 @@ private slots:
     void playerChangedChunk();
     void checkPlayerCollision();
 
-    void checkCollision(MoveDirection, float leftX, float rightX, float bottomY, float topY, float speed);
+    void checkCollision(MoveDirection, float leftX, float rightX, float bottomY, float topY);
 
 private:
 

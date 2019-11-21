@@ -7,10 +7,10 @@ Player::Player( QOpenGLShaderProgram *program,
     m_textureAttr( textureAttr ),
     m_textureUniform( textureUniform )
 {
-    QString objectName;
-    objectName = "player";
-    objectName += char(playerNumber);
+    objectName = "Player";
+    objectName.append(QString::number(playerNumber));
 
+    qDebug() << objectName;
     this->setObjectName(objectName);
 
     if (PlayerCoords.size() == 2) {

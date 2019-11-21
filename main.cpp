@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
     w.setWindowTitle("ShakalGame");
     //w.setWindowTitle("Escape from UMNIK");
     //w.setFixedSize(500, 500);
-    w.setFixedSize(1024, 1024);
+    w.setFixedSize(700, 700);
     w.show();
 
     return a.exec();

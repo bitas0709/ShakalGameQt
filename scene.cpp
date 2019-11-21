@@ -1,5 +1,15 @@
 #include "scene.h"
 
+#define ObjType 0
+#define ObjSizeX 1
+#define ObjSizeY 2
+#define ObjStartX 3
+#define ObjStartY 4
+#define ObjCoordZ 5
+#define ObjPassable 6
+#define ObjTexture 7
+#define ObjNumber 8
+
 Scene::Scene( QWidget *parent ) :
     QOpenGLWidget( parent )
 {
@@ -18,6 +28,19 @@ Scene::~Scene()
 }
 
 void Scene::gameTick() {
+    if (GameMode == GameModeState::Single) {
+        if (pressedKeys.size() != 0) {
+            for (int i = 0; i < pressedKeys.size(); i++) {
+                if (pressedKeys[i] == Qt::Key_Left) {
+                    m_player[0]->CurrentLineOfSightPlayer = m_player[0]->EnumLineOfSightPlayer::LookLeft;
+                    emit changePlayerTexture();
+                    this->sender()->setObjectName("Player0");
+                    emit checkCollision(MoveDirection::Left, m_player[0]->leftX0(), m_player[0]->rightX0(),
+                            m_player[0]->bottomY0(), m_player[0]->topY0());
+                }
+            }
+        }
+    }
     /*qDebug() << "playerCoordY =" << m_player->bottomY0();
     if (!m_player->isPlayerJump) {
         if (m_player->bottomY0() > highestPointObj) {
@@ -219,8 +242,8 @@ void Scene::gameTick() {
             }
         }
     }
-    //qDebug() << "NumObject =" << CurrentObjNumPlayer.at(0);
-    update();*/
+    //qDebug() << "NumObject =" << CurrentObjNumPlayer.at(0);*/
+    update();
 }
 
 void Scene::playerChangedChunk() {
@@ -259,7 +282,7 @@ void Scene::playerChangedChunk() {
     }*/
 }
 
-void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, float bottomY, float topY, float speed) {
+void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, float bottomY, float topY) {
 
     QString objectName = this->sender()->objectName();
 
@@ -296,12 +319,12 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
 
     //разнесение объектов
     for (int i = 0; i < tempAllObjects.size(); i++) {
-        if (m_map->ObjectData->at(4).toFloat() + m_map->ObjectData->at(2).toFloat() <= bottomY) {
+        if (m_map->ObjectData->at(ObjStartY).toFloat() + m_map->ObjectData->at(ObjSizeY).toFloat() <= bottomY) {
             tempObjUnder.push_back(tempAllObjects.at(i)); //запись объектов ниже ног существа
-        } else if (m_map->ObjectData->at(4).toFloat() < topY &&
-                   m_map->ObjectData->at(4).toFloat() + m_map->ObjectData->at(2).toFloat() > bottomY) {
+        } else if (m_map->ObjectData->at(ObjStartY).toFloat() < topY &&
+                   m_map->ObjectData->at(ObjStartY).toFloat() + m_map->ObjectData->at(ObjSizeY).toFloat() > bottomY) {
             tempObjOnLevel.push_back(tempAllObjects.at(i)); //запись объектов на уровне существа
-        } else if (m_map->ObjectData->at(4).toFloat() > topY) {
+        } else if (m_map->ObjectData->at(ObjStartY).toFloat() > topY) {
             tempObjAbove.push_back(tempAllObjects.at(i)); //запись объектов выше головы существа
         }
     }
@@ -310,44 +333,82 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
     case MoveDirection::Left: {
         QVector<int> LeftObjects; //номера объектов, которые находятся левее существа
         for (int i = 0; i < tempObjOnLevel.size(); i++) {
-            if (m_map->ObjectData[tempObjOnLevel.at(i)].at(4).toFloat() + m_map->ObjectData[tempObjOnLevel.at(i)].at(2).toFloat() <
+            if (m_map->ObjectData[tempObjOnLevel.at(i)].at(ObjStartX).toFloat() +
+                    m_map->ObjectData[tempObjOnLevel.at(i)].at(ObjSizeX).toFloat() <
                     leftX) {
                 LeftObjects.push_back(tempObjOnLevel.at(i));
             }
         }
         for (int i = 0; i < LeftObjects.size(); i++) {
-            if (leftX - (m_map->ObjectData[LeftObjects.at(i)].at(4).toFloat() + m_map->ObjectData[LeftObjects.at(i)].at(2).toFloat())
+            if (leftX - (m_map->ObjectData[LeftObjects.at(i)].at(ObjStartX).toFloat() +
+                         m_map->ObjectData[LeftObjects.at(i)].at(ObjSizeX).toFloat())
                     < distanceToNearestObj) {
-                distanceToNearestObj = leftX - (m_map->ObjectData[LeftObjects.at(i)].at(4).toFloat() + m_map->ObjectData[LeftObjects.at(i)].at(2).toFloat());
+                distanceToNearestObj = leftX - (m_map->ObjectData[LeftObjects.at(i)].at(ObjStartX).toFloat() +
+                        m_map->ObjectData[LeftObjects.at(i)].at(ObjSizeX).toFloat());
             }
-        }
-        if (speed > distanceToNearestObj) {
-            speed = distanceToNearestObj;
         }
         break;
     }
     case MoveDirection::Right: {
         QVector<int> RightObjects;
         for(int i = 0; i < tempObjOnLevel.size(); i++) {
-            if (m_map->ObjectData[tempObjOnLevel.at(i)].at(4).toFloat() > rightX) {
+            if (m_map->ObjectData[tempObjOnLevel.at(i)].at(ObjStartX).toFloat() > rightX) {
                 RightObjects.push_back(tempObjOnLevel.at(i));
             }
         }
         for (int i = 0; i < RightObjects.size(); i++) {
-            if (m_map->ObjectData[RightObjects.at(i)].at(4).toFloat() - rightX < distanceToNearestObj) {
-                distanceToNearestObj = m_map->ObjectData[RightObjects.at(i)].at(4).toFloat() - rightX;
+            if (m_map->ObjectData[RightObjects.at(i)].at(ObjStartX).toFloat() - rightX < distanceToNearestObj) {
+                distanceToNearestObj = m_map->ObjectData[RightObjects.at(i)].at(ObjStartX).toFloat() - rightX;
             }
-        }
-        if (speed > distanceToNearestObj) {
-            speed = distanceToNearestObj;
         }
         break;
     }
     case MoveDirection::Up: {
+        for (int i = 0; i < tempObjAbove.size(); i++) {
+            if (m_map->ObjectData[tempObjAbove.at(i)].at(ObjStartY).toFloat() < distanceToNearestObj) {
+                distanceToNearestObj = m_map->ObjectData[tempObjAbove.at(i)].at(ObjStartY).toFloat();
+            }
+        }
+        break;
+    }
+    case MoveDirection::Down: {
         break;
     }
     }
-
+    qDebug() << this->sender()->objectName();
+    if (objectName.contains("Player")) {
+        switch(direction) {
+        case MoveDirection::Up: {
+            if (distanceToNearestObj < m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(0)) {
+                m_player[objectName.split("Player").at(1).toInt()]->runSpeed.replace(0, distanceToNearestObj);
+            }
+            break;
+        }
+        case MoveDirection::Down: {
+            if (distanceToNearestObj < m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(1)) {
+                m_player[objectName.split("Player").at(1).toInt()]->runSpeed.replace(1, distanceToNearestObj);
+            }
+            break;
+        }
+        case MoveDirection::Left: {
+            if (distanceToNearestObj < m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(2)) {
+                m_player[objectName.split("Player").at(1).toInt()]->runSpeed.replace(2, distanceToNearestObj);
+            } else {
+                m_player[objectName.split("Player").at(1).toInt()]->runSpeed.replace(2, 0.1f);
+            }
+            m_player[objectName.split("Player").at(1).toInt()]->setX0(m_player[objectName.split("Player").at(1).toInt()]->leftX0()
+                    - m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(2));
+            break;
+        }
+        case MoveDirection::Right: {
+            if (distanceToNearestObj < m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(3)) {
+                m_player[objectName.split("Player").at(1).toInt()]->runSpeed.replace(3, distanceToNearestObj);
+            }
+            break;
+        }
+        }
+        //m_player[objectName.split("Player").at(1).toInt()]->runSpeed = speed;
+    }
 }
 
 void Scene::checkPlayerCollision() {
@@ -445,6 +506,8 @@ void Scene::startGameSlot() {
         m_player[0] = new Player( &m_program, m_vertexAttr, m_textureAttr, m_textureUniform, m_map->PlayerCoords, 0 );
         connect(m_player[0], SIGNAL(jumpButtonPressed(float)), m_player[0], SLOT(playerJump(float)));
         connect(this, SIGNAL(changePlayerTexture()), m_player[0], SLOT(changePlayerTexture()));
+        connect(m_player[0], SIGNAL(checkColl(MoveDirection, float, float, float, float)),
+                this, SLOT(checkCollision(MoveDirection, float, float, float, float)));
     } else {
 
     }
