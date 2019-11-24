@@ -9,11 +9,12 @@
 #include <QDebug>
 #include <QList>
 #include <QtMath>
+#include <QPainter>
 
 class Object {
 public:
     Object( QOpenGLShaderProgram *program,
-            int vertexAttr, int textureAttr, int textureUniform, QList<QString> ObjectData, QString biome );
+            int vertexAttr, int textureAttr, int textureUniform, QList<QString> ObjectData, QString biome, int numObject );
     //Object();
     ~Object();
 

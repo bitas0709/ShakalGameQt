@@ -3,7 +3,7 @@
 
 
 Object::Object( QOpenGLShaderProgram *program,
-                int vertexAttr, int textureAttr, int textureUniform, QList<QString> ObjectData, QString biome ):
+                int vertexAttr, int textureAttr, int textureUniform, QList<QString> ObjectData, QString biome, int numObject ):
     m_program( program ),
     m_vertexAttr( vertexAttr ),
     m_textureAttr( textureAttr ),
@@ -24,6 +24,8 @@ Object::Object( QOpenGLShaderProgram *program,
         startCropY = 96;
     }
 
+    QPainter p;
+
     QRect rect;
 
     if (ObjectData.at(7).contains("Block")) {
@@ -35,6 +37,11 @@ Object::Object( QOpenGLShaderProgram *program,
                 objectTexture.setPixel(j, i, origImage.pixel(startCropX + j % 16, startCropY + i % 16));
             }
         }
+        p.begin(&objectTexture);
+        p.setPen(QPen(Qt::yellow));
+        p.setFont(QFont("Times", 12, QFont::Expanded));
+        p.drawText(objectTexture.rect(), Qt::AlignCenter, QString::number(numObject));
+        p.end();
         m_texture = new QOpenGLTexture( QImage(objectTexture) );
     } else if (ObjectData.at(7).contains("TopBrick")) {
         startCropX = 16;
@@ -45,6 +52,11 @@ Object::Object( QOpenGLShaderProgram *program,
                 objectTexture.setPixel(j, i, origImage.pixel(startCropX + j % 16, startCropY + i % 16));
             }
         }
+        p.begin(&objectTexture);
+        p.setPen(QPen(Qt::white));
+        p.setFont(QFont("Times", 12, QFont::Bold));
+        p.drawText(objectTexture.rect(), Qt::AlignCenter, QString::number(numObject));
+        p.end();
         m_texture = new QOpenGLTexture( QImage(objectTexture) );
     } else if (ObjectData.at(7).contains("Brick2")) {
         startCropX = 32;
@@ -55,6 +67,11 @@ Object::Object( QOpenGLShaderProgram *program,
                 objectTexture.setPixel(j, i, origImage.pixel(startCropX + j % 16, startCropY + i % 16));
             }
         }
+        p.begin(&objectTexture);
+        p.setPen(QPen(Qt::white));
+        p.setFont(QFont("Times", 12, QFont::Bold));
+        p.drawText(objectTexture.rect(), Qt::AlignCenter, QString::number(numObject));
+        p.end();
         m_texture = new QOpenGLTexture( QImage(objectTexture) );
     } else if (ObjectData.at(7).contains("EmptyBox")) {
         startCropX = 48;
@@ -65,6 +82,11 @@ Object::Object( QOpenGLShaderProgram *program,
                 objectTexture.setPixel(j, i, origImage.pixel(startCropX + j % 16, startCropY + i % 16));
             }
         }
+        p.begin(&objectTexture);
+        p.setPen(QPen(Qt::white));
+        p.setFont(QFont("Times", 12, QFont::Bold));
+        p.drawText(objectTexture.rect(), Qt::AlignCenter, QString::number(numObject));
+        p.end();
         m_texture = new QOpenGLTexture( QImage(objectTexture) );
     } else if (ObjectData.at(7).contains("Fence")) {
         startCropX = 80;
@@ -75,6 +97,11 @@ Object::Object( QOpenGLShaderProgram *program,
                 objectTexture.setPixel(j, i, origImage.pixel(startCropX + j % 16, startCropY + i % 16));
             }
         }
+        p.begin(&objectTexture);
+        p.setPen(QPen(Qt::white));
+        p.setFont(QFont("Times", 12, QFont::Bold));
+        p.drawText(objectTexture.rect(), Qt::AlignCenter, QString::number(numObject));
+        p.end();
         m_texture = new QOpenGLTexture( QImage(objectTexture) );
     } else {
         m_texture = new QOpenGLTexture( QImage(":/Textures/NoTexture.png") );

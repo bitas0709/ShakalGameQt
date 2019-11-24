@@ -37,16 +37,14 @@ signals:
     void startGame();
     void tick();
     void changePlayerTexture();
-    void playerChangedChunkSignal();
-    void checkPlayerCollisionSignal();
+    void enableChunkLinesSignal();
 
 private slots:
 
     void startGameSlot();
     void gameTick();
     void moveCamera();
-    void playerChangedChunk();
-    void checkPlayerCollision();
+    void enableChunkLines();
 
     void checkCollision(MoveDirection, float leftX, float rightX, float bottomY, float topY);
 
@@ -66,6 +64,7 @@ private:
 
     QVector<int> playerChunkNum; //номер чанка, в котором находится игрок
     //int objUnderPlayer; //номер объекта, находящегося под игроком
+    bool enableChunkLinesBool = false;
 
     float highestPointObj = 0.0f;
     QVector<int> objectsAbovePlayer;
