@@ -38,8 +38,9 @@ Object::Object( QOpenGLShaderProgram *program,
             }
         }
         p.begin(&objectTexture);
-        p.setPen(QPen(Qt::yellow));
-        p.setFont(QFont("Times", 12, QFont::Expanded));
+        //p.setPen(QPen(Qt::darkYellow));
+        p.setPen(QPen(Qt::white));
+        p.setFont(QFont("Times", 12, QFont::Bold));
         p.drawText(objectTexture.rect(), Qt::AlignCenter, QString::number(numObject));
         p.end();
         m_texture = new QOpenGLTexture( QImage(objectTexture) );

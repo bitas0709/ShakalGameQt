@@ -88,7 +88,6 @@ private:
     float cameraSizeX = 50.0f;
     float cameraSizeY = 50.0f;
     bool stickCameraToThePlayer = true; //зафиксировать камеру на игроке
-
 };
 
 

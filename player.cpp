@@ -34,6 +34,7 @@ Player::~Player() {
 }
 
 void Player::changePlayerTexture() {
+    delete m_texture;
     if (CurrentLineOfSightPlayer == EnumLineOfSightPlayer::LookRight) {
         m_texture = new QOpenGLTexture(QImage( ":/Textures/Mario.png" ));
     } else {

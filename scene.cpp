@@ -33,221 +33,24 @@ void Scene::gameTick() {
             this->sender()->setObjectName("Player0");
             for (int i = 0; i < pressedKeys.size(); i++) {
                 if (pressedKeys[i] == Qt::Key_Left) {
-                    m_player[0]->CurrentLineOfSightPlayer = m_player[0]->EnumLineOfSightPlayer::LookLeft;
-                    emit changePlayerTexture();
+                    if (m_player[0]->CurrentLineOfSightPlayer == m_player[0]->EnumLineOfSightPlayer::LookRight) {
+                        m_player[0]->CurrentLineOfSightPlayer = m_player[0]->EnumLineOfSightPlayer::LookLeft;
+                        emit changePlayerTexture();
+                    }
                     emit checkCollision(MoveDirection::Left, m_player[0]->leftX0(), m_player[0]->rightX0(),
                             m_player[0]->bottomY0(), m_player[0]->topY0());
                 } else if (pressedKeys[i] == Qt::Key_Right) {
-                    m_player[0]->CurrentLineOfSightPlayer = m_player[0]->EnumLineOfSightPlayer::LookRight;
-                    emit changePlayerTexture();
+                    if (m_player[0]->CurrentLineOfSightPlayer == m_player[0]->EnumLineOfSightPlayer::LookLeft) {
+                        m_player[0]->CurrentLineOfSightPlayer = m_player[0]->EnumLineOfSightPlayer::LookRight;
+                        emit changePlayerTexture();
+                    }
                     emit checkCollision(MoveDirection::Right, m_player[0]->leftX0(), m_player[0]->rightX0(),
                             m_player[0]->bottomY0(), m_player[0]->topY0());
                 }
             }
         }
     }
-    /*qDebug() << "playerCoordY =" << m_player->bottomY0();
-    if (!m_player->isPlayerJump) {
-        if (m_player->bottomY0() > highestPointObj) {
-            m_player->isPlayerOnGround = false;
-        } else {
-            m_player->isPlayerOnGround = true;
-        }
-    }
-    if (!m_player->isPlayerOnGround) {
-        //emit m_player->jumpButtonPressed(step);
-        moveCamera();
-        if (!m_player->isPlayerJump) {
-            if (m_player->bottomY0() > 0) {
-                m_player->setY0(m_player->bottomY0() - step);
-            }
-        }
-    }
-    if (pressedKeys.size() != 0) {
-        for (int i = 0; i < pressedKeys.size(); i++) {
-            if (pressedKeys[i] == Qt::Key_Left) {
-                QVector<int> numObjects; //номера объектов в двух чанках
-
-                if (qCeil(qreal(m_player->leftX0() / m_map->chunkSize)) == qCeil(qreal(m_player->rightX0() / m_map->chunkSize))) {
-                    if (playerChunkNum.size() == 1) {
-                        if (qCeil(qreal(m_player->leftX0() / m_map->chunkSize)) != playerChunkNum.at(0)) {
-                            emit playerChangedChunkSignal();
-                        }
-                    } else if (playerChunkNum.size() == 2) {
-                        emit playerChangedChunkSignal();
-                    }
-                } else {
-                    if (playerChunkNum.size() == 1) {
-                        emit playerChangedChunkSignal();
-                    } else if (playerChunkNum.size() == 2) {
-                        if (qCeil(qreal(m_player->leftX0() / m_map->chunkSize)) != playerChunkNum.at(0) || qCeil(qreal(m_player->rightX0() / m_map->chunkSize)) != playerChunkNum.at(1)) {
-                            emit playerChangedChunkSignal();
-                        }
-                    }
-                }
-
-                emit checkPlayerCollisionSignal();
-
-                if (playerChunkNum.at(0) > 0) {
-                    for (int j = 0; j < m_map->ChunkList[playerChunkNum.at(0)].size(); j++) {
-                        //получение номеров объектов в чанке, в котором находится игрок
-                        if (!numObjects.contains(m_map->ChunkList[playerChunkNum.at(0)].at(j))) {
-                            numObjects.push_back(m_map->ChunkList[playerChunkNum.at(0)].at(j));
-                        }
-                    }
-                    for (int j = 0; j < m_map->ChunkList[playerChunkNum.at(0) - 1].size(); j++) {
-                        //получение номеров объектов в левом от игрока чанке
-                        if (!numObjects.contains(m_map->ChunkList[playerChunkNum.at(0) - 1].at(j))) {
-                            numObjects.push_back(m_map->ChunkList[playerChunkNum.at(0) - 1].at(j));
-                        }
-                    }
-                } else if (playerChunkNum.at(0) == 0) {
-                    for (int j = 0; j < m_map->ChunkList[playerChunkNum.at(0)].size(); j++) {
-                        //получение номеров объектов в чанке, в котором находится игрок
-                        if (!numObjects.contains(m_map->ChunkList[playerChunkNum.at(0)].at(j))) {
-                            numObjects.push_back(m_map->ChunkList[playerChunkNum.at(0)].at(j));
-                        }
-                    }
-                }
-                //qDebug() << "numObjects =" << numObjects;
-                bool playerCanRun = true;
-                for (int i = 0; i < numObjects.size(); i++) {
-                    if (qFuzzyCompare(m_player->leftX0(), m_map->ObjectData[numObjects.at(i)].at(3).toFloat()
-                                      + m_map->ObjectData[numObjects.at(i)].at(1).toFloat())) {
-                        if (m_player->topY0() >= m_map->ObjectData[numObjects.at(i)].at(4).toFloat() &&
-                                m_player->bottomY0() < m_map->ObjectData[numObjects.at(i)].at(4).toFloat() +
-                                m_map->ObjectData[numObjects.at(i)].at(2).toFloat()) {
-                            //если голова выше нижней точки объекта и ноги ниже верхней точки объекта
-                            playerCanRun = false;
-                        }
-                    }
-                }
-                if (playerCanRun) {
-                    if (m_player->leftX0() > m_map->minX) {
-                        m_player->setX0( m_player->leftX0() - step);
-                    }
-                }
-                if (stickCameraToThePlayer) {
-                    moveCamera();
-                }
-                if (m_player->CurrentLineOfSightPlayer == m_player->LookRight) {
-                    m_player->CurrentLineOfSightPlayer = m_player->LookLeft;
-                    emit changePlayerTexture();
-                }
-            } else if (pressedKeys[i] == Qt::Key_Right) {
-                QVector<int> numObjects; //номера объектов в двух чанках
-
-                if (qCeil(qreal(m_player->leftX0() / m_map->chunkSize)) == qCeil(qreal(m_player->rightX0() / m_map->chunkSize))) {
-                    if (playerChunkNum.size() == 1) {
-                        if (qCeil(qreal(m_player->leftX0() / m_map->chunkSize)) != playerChunkNum.at(0)) {
-                            emit playerChangedChunkSignal();
-                        }
-                    } else if (playerChunkNum.size() == 2) {
-                        emit playerChangedChunkSignal();
-                    }
-                } else {
-                    if (playerChunkNum.size() == 1) {
-                        emit playerChangedChunkSignal();
-                    } else if (playerChunkNum.size() == 2) {
-                        if (qCeil(qreal(m_player->leftX0() / m_map->chunkSize)) != playerChunkNum.at(0) || qCeil(qreal(m_player->rightX0() / m_map->chunkSize)) != playerChunkNum.at(1)) {
-                            emit playerChangedChunkSignal();
-                        }
-                    }
-                }
-
-                emit checkPlayerCollisionSignal();
-
-                if (playerChunkNum.size() == 1) {
-                    if (playerChunkNum.at(0) < m_map->countChunks) {
-                        for (int j = 0; j < m_map->ChunkList[playerChunkNum.at(0)].size(); j++) {
-                            //получение номеров объектов в чанке, в котором находится игрок
-                            if (!numObjects.contains(m_map->ChunkList[playerChunkNum.at(0)].at(j))) {
-                                numObjects.push_back(m_map->ChunkList[playerChunkNum.at(0)].at(j));
-                            }
-                        }
-                        for (int j = 0; j < m_map->ChunkList[playerChunkNum.at(0) + 1].size(); j++) {
-                            //получение номеров объектов в правом от игрока чанке
-                            if (!numObjects.contains(m_map->ChunkList[playerChunkNum.at(0) + 1].at(j))) {
-                                numObjects.push_back(m_map->ChunkList[playerChunkNum.at(0) + 1].at(j));
-                            }
-                        }
-                    } else {
-                        for (int j = 0; j < m_map->ChunkList[playerChunkNum.at(0)].size(); j++) {
-                            //получение номеров объектов в чанке, в котором находится игрок
-                            if (!numObjects.contains(m_map->ChunkList[playerChunkNum.at(0)].at(j))) {
-                                numObjects.push_back(m_map->ChunkList[playerChunkNum.at(0)].at(j));
-                            }
-                        }
-                    }
-                } else if (playerChunkNum.size() == 2) {
-                    if (playerChunkNum.at(1) < m_map->countChunks) {
-                        for (int j = 0; j < m_map->ChunkList[playerChunkNum.at(0)].size(); j++) {
-                            //получение номеров объектов в чанке, в котором находится игрок
-                            if (!numObjects.contains(m_map->ChunkList[playerChunkNum.at(0)].at(j))) {
-                                numObjects.push_back(m_map->ChunkList[playerChunkNum.at(0)].at(j));
-                            }
-                        }
-                        for (int j = 0; j < m_map->ChunkList[playerChunkNum.at(0) + 1].size(); j++) {
-                            //получение номеров объектов в правом от игрока чанке
-                            if (!numObjects.contains(m_map->ChunkList[playerChunkNum.at(0) + 1].at(j))) {
-                                numObjects.push_back(m_map->ChunkList[playerChunkNum.at(0) + 1].at(j));
-                            }
-                        }
-                    } else {
-                        for (int j = 0; j < m_map->ChunkList[playerChunkNum.at(0)].size(); j++) {
-                            //получение номеров объектов в чанке, в котором находится игрок
-                            if (!numObjects.contains(m_map->ChunkList[playerChunkNum.at(0)].at(j))) {
-                                numObjects.push_back(m_map->ChunkList[playerChunkNum.at(0)].at(j));
-                            }
-                        }
-                    }
-                }
-                //qDebug() << "numObjects =" << numObjects;
-                bool playerCanRun = true;
-                for (int i = 0; i < numObjects.size(); i++) {
-                    if (qFuzzyCompare(m_player->rightX0(), m_map->ObjectData[numObjects.at(i)].at(3).toFloat())) {
-                        if (m_player->topY0() >= m_map->ObjectData[numObjects.at(i)].at(4).toFloat() &&
-                                m_player->bottomY0() < m_map->ObjectData[numObjects.at(i)].at(4).toFloat() +
-                                m_map->ObjectData[numObjects.at(i)].at(2).toFloat()) {
-                            //если голова выше нижней точки объекта и ноги ниже верхней точки объекта
-                            playerCanRun = false;
-                        }
-                    }
-                }
-                if (playerCanRun) {
-                    if (m_player->rightX0() < m_map->maxX) {
-                        m_player->setX0( m_player->leftX0() + step);
-                    }
-                }
-                //m_player->setX0( m_player->leftX0() + step );
-                if (stickCameraToThePlayer) {
-                    moveCamera();
-                }
-                if (m_player->CurrentLineOfSightPlayer == m_player->LookLeft) {
-                    m_player->CurrentLineOfSightPlayer = m_player->LookRight;
-                    emit changePlayerTexture();
-                }
-            } else if (pressedKeys[i] == Qt::Key_Space) {
-                emit m_player->checkColl(m_player->MoveDirection::Left, m_player->leftX0(), m_player->rightX0(), m_player->bottomY0(), m_player->topY0());
-                if (m_player->isPlayerOnGround) {
-                    //m_player->setY0(m_player->bottomY0() + step);
-                    if (!m_player->isPlayerJump) {
-                        m_player->playerCoordBeforeJump = m_player->bottomY0();
-                    }
-                    m_player->isPlayerJump = true;
-                    emit m_player->jumpButtonPressed(step);
-                }
-                moveCamera();
-            } else if (pressedKeys[i] == Qt::Key_Down) {
-                //m_player->setY0(m_player->bottomY0() - step);
-                moveCamera();
-            } else if (pressedKeys[i] == Qt::Key_Up) {
-                m_player->setY0(m_player->bottomY0() + step);
-                moveCamera();
-            }
-        }
-    }
-    //qDebug() << "NumObject =" << CurrentObjNumPlayer.at(0);*/
+    moveCamera();
     update();
 }
 
@@ -255,11 +58,13 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
 
     QString objectName = this->sender()->objectName();
 
+    //этого тут быть не должно
     QVector<int> tempAllObjects; //номера всех объектов рядом и по пути от существа
     QVector<int> tempObjUnder; //временный вектор с номерами объектов под проверяемым существом
     QVector<int> tempObjOnLevel; //временный вектор с номерами объектов на уровне существа
     QVector<int> tempObjAbove; //временный вектор с номерами объектов выше проверяемого существа
     float distanceToNearestObj = 999.0f; //расстояние до ближайшего объекта
+
     int leftChunkNum = qCeil(qreal(leftX / m_map->chunkSize));
     int rightChunkNum = qCeil(qreal(rightX / m_map->chunkSize));
     int checkFromThisChunk = 0;
@@ -285,7 +90,7 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
             }
         }
     }
-    qDebug() << "tempAllObjects =" << tempAllObjects;
+    //qDebug() << "tempAllObjects =" << tempAllObjects;
     //разнесение объектов
     for (int i = 0; i < tempAllObjects.size(); i++) {
         if (m_map->ObjectData[tempAllObjects.at(i)].at(ObjStartY).toFloat() + m_map->ObjectData[tempAllObjects.at(i)].at(ObjSizeY).toFloat() <= bottomY) {
@@ -297,6 +102,26 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
             tempObjAbove.push_back(tempAllObjects.at(i));
         }
     }
+
+    //проверка расстояния до ближайшего объекта снизу
+    QVector<int> tempObjUnderFoots;
+    for (int i = 0; i < tempObjUnder.size(); i++) {
+        if (m_map->ObjectData[tempObjUnder.at(i)].at(ObjStartX).toFloat() <= m_player[0]->rightX0() &&
+                m_map->ObjectData[tempObjUnder.at(i)].at(ObjStartX).toFloat() +
+                m_map->ObjectData[tempObjUnder.at(i)].at(ObjSizeX).toFloat() > m_player[0]->leftX0()) {
+            tempObjUnderFoots.push_back(tempObjUnder.at(i));
+        }
+    }
+    //qDebug() << "tempObjUnderFoots =" << tempObjUnderFoots;
+    float highestPointUnderFoots = 0.0f;
+    for (int i = 0; i < tempObjUnderFoots.size(); i++) {
+        if (m_map->ObjectData[tempObjUnderFoots.at(i)].at(ObjStartY).toFloat() +
+                m_map->ObjectData[tempObjUnderFoots.at(i)].at(ObjSizeY).toFloat() > highestPointUnderFoots) {
+            highestPointUnderFoots = m_map->ObjectData[tempObjUnderFoots.at(i)].at(ObjStartY).toFloat() +
+                    m_map->ObjectData[tempObjUnderFoots.at(i)].at(ObjSizeY).toFloat();
+        }
+    }
+    //qDebug() << "highestPointUnderFoots =" << highestPointUnderFoots;
 
     switch(direction) {
     case MoveDirection::Left: {
@@ -344,11 +169,11 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
         break;
     }
     }
-    qDebug() << "ObjAbovePlayer =" << tempObjAbove;
+    /*qDebug() << "ObjAbovePlayer =" << tempObjAbove;
     qDebug() << "ObjOnLevelPlayer =" << tempObjOnLevel;
     qDebug() << "ObjUnderPlayer =" << tempObjUnder;
     qDebug() << "distanceToNearestObj =" << distanceToNearestObj;
-    qDebug() << this->sender()->objectName();
+    qDebug() << this->sender()->objectName();*/
     if (objectName.contains("Player")) {
         switch(direction) {
         case MoveDirection::Up: {
@@ -364,29 +189,28 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
             break;
         }
         case MoveDirection::Left: {
-            if (qFuzzyCompare(distanceToNearestObj, m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(2))) {
-                m_player[objectName.split("Player").at(1).toInt()]->runSpeed.replace(2, 0.0f);
+            if (qFuzzyCompare(m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(2), 0.0f)) {
+                m_player[objectName.split("Player").at(1).toInt()]->setX0(m_player[objectName.split("Player").at(1).toInt()]->leftX0()
+                        - m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(2));
             } else if (distanceToNearestObj < m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(2)) {
                 m_player[objectName.split("Player").at(1).toInt()]->runSpeed.replace(2, distanceToNearestObj);
-            } else {
+            } else if (distanceToNearestObj > m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(2)) {
                 m_player[objectName.split("Player").at(1).toInt()]->runSpeed.replace(2, 0.1f);
             }
-            m_player[objectName.split("Player").at(1).toInt()]->setX0(m_player[objectName.split("Player").at(1).toInt()]->leftX0()
-                    - m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(2));
             break;
         }
         case MoveDirection::Right: {
             if (distanceToNearestObj < m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(3)) {
                 m_player[objectName.split("Player").at(1).toInt()]->runSpeed.replace(3, distanceToNearestObj);
             } else {
-                m_player[objectName.split("Player").at(1).toInt()]->runSpeed.replace(2, 0.1f);
+                m_player[objectName.split("Player").at(1).toInt()]->runSpeed.replace(3, 0.1f);
             }
             m_player[objectName.split("Player").at(1).toInt()]->setX0(m_player[objectName.split("Player").at(1).toInt()]->leftX0()
-                    + m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(2));
+                    + m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(3));
             break;
         }
         }
-        //m_player[objectName.split("Player").at(1).toInt()]->runSpeed = speed;
+        qDebug() << "playerSpeed =" << m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(2);
     }
 }
 
@@ -494,18 +318,20 @@ void Scene::resizeGL( int w, int h ) {
 }
 
 void Scene::moveCamera() {
-    /*if (stickCameraToThePlayer) {
-        if (m_player->bottomY0() >= 25.0f) {
-            matrixY = -m_player->bottomY0() + 25;
-        } else {
-            matrixY = 0.0f;
+    if (GameMode == GameModeState::Single) {
+        if (stickCameraToThePlayer) {
+            if (m_player[0]->bottomY0() >= 25.0f) {
+                matrixY = -m_player[0]->bottomY0() + 25;
+            } else {
+                matrixY = 0.0f;
+            }
         }
-        if (m_player->leftX0() >= cameraSizeX / 2 + cameraSizeX / 4 - matrixX) {
+        if (m_player[0]->leftX0() >= cameraSizeX / 2 + cameraSizeX / 4 - matrixX) {
             matrixX -= step;
-        } else if (m_player->leftX0() <= cameraSizeX / 2 - cameraSizeX / 4 - matrixX) {
+        } else if (m_player[0]->leftX0() <= cameraSizeX / 2 - cameraSizeX / 4 - matrixX) {
             matrixX += step;
         }
-    }*/
+    }
 }
 
 void Scene::enableChunkLines() {
