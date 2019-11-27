@@ -58,7 +58,7 @@ public:
     float maxRunSpeed = 0.5f; //максимальная скорость бега
     float runCoefficient = 0.125f;
 
-    bool isPlayerOnGround = true;
+    bool isPlayerOnGround = false;
 
 signals:
 

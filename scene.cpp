@@ -29,8 +29,14 @@ Scene::~Scene()
 
 void Scene::gameTick() {
     if (GameMode == GameModeState::Single) {
+        this->sender()->setObjectName("Player0");
+        if (!m_player[0]->isPlayerOnGround) {
+            if (!m_player[0]->isPlayerJump) {
+                emit checkCollision(MoveDirection::Down, m_player[0]->leftX0(), m_player[0]->rightX0(),
+                        m_player[0]->bottomY0(), m_player[0]->topY0());
+            }
+        }
         if (pressedKeys.size() != 0) {
-            this->sender()->setObjectName("Player0");
             for (int i = 0; i < pressedKeys.size(); i++) {
                 if (pressedKeys[i] == Qt::Key_Left) {
                     if (m_player[0]->CurrentLineOfSightPlayer == m_player[0]->EnumLineOfSightPlayer::LookRight) {
@@ -55,7 +61,6 @@ void Scene::gameTick() {
 }
 
 void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, float bottomY, float topY) {
-
     QString objectName = this->sender()->objectName();
 
     //этого тут быть не должно
@@ -64,6 +69,8 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
     QVector<int> tempObjOnLevel; //временный вектор с номерами объектов на уровне существа
     QVector<int> tempObjAbove; //временный вектор с номерами объектов выше проверяемого существа
     float distanceToNearestObj = 999.0f; //расстояние до ближайшего объекта
+
+    //qDebug() << "bottomY =" << bottomY;
 
     int leftChunkNum = qCeil(qreal(leftX / m_map->chunkSize));
     int rightChunkNum = qCeil(qreal(rightX / m_map->chunkSize));
@@ -91,12 +98,16 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
         }
     }
     //qDebug() << "tempAllObjects =" << tempAllObjects;
-    //разнесение объектов
+    //разнесение объектов по высоте
     for (int i = 0; i < tempAllObjects.size(); i++) {
-        if (m_map->ObjectData[tempAllObjects.at(i)].at(ObjStartY).toFloat() + m_map->ObjectData[tempAllObjects.at(i)].at(ObjSizeY).toFloat() <= bottomY) {
+        if (m_map->ObjectData[tempAllObjects.at(i)].at(ObjStartY).toFloat() +
+                m_map->ObjectData[tempAllObjects.at(i)].at(ObjSizeY).toFloat() < bottomY ||
+                qFuzzyCompare(m_map->ObjectData[tempAllObjects.at(i)].at(ObjStartY).toFloat() +
+                              m_map->ObjectData[tempAllObjects.at(i)].at(ObjSizeY).toFloat(), bottomY)) {
             tempObjUnder.push_back(tempAllObjects.at(i));
         } else if (m_map->ObjectData[tempAllObjects.at(i)].at(ObjStartY).toFloat() < topY &&
-                   m_map->ObjectData[tempAllObjects.at(i)].at(ObjStartY).toFloat() + m_map->ObjectData[tempAllObjects.at(i)].at(ObjSizeY).toFloat() > bottomY) {
+                   m_map->ObjectData[tempAllObjects.at(i)].at(ObjStartY).toFloat() +
+                   m_map->ObjectData[tempAllObjects.at(i)].at(ObjSizeY).toFloat() > bottomY) {
             tempObjOnLevel.push_back(tempAllObjects.at(i));
         } else if (m_map->ObjectData[tempAllObjects.at(i)].at(ObjStartY).toFloat() > topY) {
             tempObjAbove.push_back(tempAllObjects.at(i));
@@ -104,6 +115,7 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
     }
 
     //проверка расстояния до ближайшего объекта снизу
+    //составление списка объектов прямо под ногами
     QVector<int> tempObjUnderFoots;
     for (int i = 0; i < tempObjUnder.size(); i++) {
         if (m_map->ObjectData[tempObjUnder.at(i)].at(ObjStartX).toFloat() <= m_player[0]->rightX0() &&
@@ -112,6 +124,7 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
             tempObjUnderFoots.push_back(tempObjUnder.at(i));
         }
     }
+    //поиск максимально высокого объекта под ногами
     //qDebug() << "tempObjUnderFoots =" << tempObjUnderFoots;
     float highestPointUnderFoots = 0.0f;
     for (int i = 0; i < tempObjUnderFoots.size(); i++) {
@@ -122,6 +135,7 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
         }
     }
     //qDebug() << "highestPointUnderFoots =" << highestPointUnderFoots;
+    //окончание проверки расстояния до ближайшего объекта снизу
 
     switch(direction) {
     case MoveDirection::Left: {
@@ -169,48 +183,71 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
         break;
     }
     }
-    /*qDebug() << "ObjAbovePlayer =" << tempObjAbove;
-    qDebug() << "ObjOnLevelPlayer =" << tempObjOnLevel;
-    qDebug() << "ObjUnderPlayer =" << tempObjUnder;
-    qDebug() << "distanceToNearestObj =" << distanceToNearestObj;
-    qDebug() << this->sender()->objectName();*/
+    //qDebug() << "ObjAbovePlayer =" << tempObjAbove;
+    //qDebug() << "ObjOnLevelPlayer =" << tempObjOnLevel;
+    //qDebug() << "ObjUnderPlayer =" << tempObjUnder;
+    //qDebug() << "distanceToNearestObj =" << distanceToNearestObj;
+    //qDebug() << this->sender()->objectName();
     if (objectName.contains("Player")) {
+        int playerNum = objectName.split("Player").at(1).toInt();
+        //если игрок не прыгает и не стоит на земле, то начать его спускать вниз
+        if (!qFuzzyIsNull(highestPointUnderFoots - bottomY)) {
+            if (!m_player[playerNum]->isPlayerJump) {
+                m_player[playerNum]->isPlayerOnGround = false;
+                m_player[playerNum]->runSpeed.replace(1, 0.1f);
+                m_player[playerNum]->setY0(m_player[playerNum]->bottomY0() -
+                        m_player[playerNum]->runSpeed.at(1));
+            }
+        } else {
+            if (!m_player[playerNum]->isPlayerJump) {
+                m_player[playerNum]->isPlayerOnGround = true;
+            }
+
+        }
         switch(direction) {
         case MoveDirection::Up: {
-            if (distanceToNearestObj < m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(0)) {
-                m_player[objectName.split("Player").at(1).toInt()]->runSpeed.replace(0, distanceToNearestObj);
+            if (distanceToNearestObj < m_player[playerNum]->runSpeed.at(0)) {
+                m_player[playerNum]->runSpeed.replace(0, distanceToNearestObj);
             }
             break;
         }
         case MoveDirection::Down: {
-            if (distanceToNearestObj < m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(1)) {
-                m_player[objectName.split("Player").at(1).toInt()]->runSpeed.replace(1, distanceToNearestObj);
+            if (distanceToNearestObj < m_player[playerNum]->runSpeed.at(1)) {
+                m_player[playerNum]->runSpeed.replace(1, distanceToNearestObj);
             }
             break;
         }
         case MoveDirection::Left: {
-            if (qFuzzyCompare(m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(2), 0.0f)) {
-                m_player[objectName.split("Player").at(1).toInt()]->setX0(m_player[objectName.split("Player").at(1).toInt()]->leftX0()
-                        - m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(2));
-            } else if (distanceToNearestObj < m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(2)) {
-                m_player[objectName.split("Player").at(1).toInt()]->runSpeed.replace(2, distanceToNearestObj);
-            } else if (distanceToNearestObj > m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(2)) {
-                m_player[objectName.split("Player").at(1).toInt()]->runSpeed.replace(2, 0.1f);
+            if (distanceToNearestObj < m_player[playerNum]->runSpeed.at(2)) {
+                m_player[playerNum]->runSpeed.replace(2, distanceToNearestObj);
+            } else if (distanceToNearestObj > m_player[playerNum]->runSpeed.at(2)) {
+                m_player[playerNum]->runSpeed.replace(2, 0.1f);
             }
+            //а вот этот момент в будущем надо будет исправить
+            if (m_player[playerNum]->runSpeed.at(2) >= 0.1f &&
+                    !qFuzzyIsNull(m_player[playerNum]->runSpeed.at(2))) {
+                m_player[playerNum]->setX0(m_player[playerNum]->leftX0() -
+                        m_player[playerNum]->runSpeed.at(2));
+            }
+            //qDebug() << "playerSpeed Left =" << m_player[playerNum]->runSpeed.at(2);
             break;
         }
         case MoveDirection::Right: {
-            if (distanceToNearestObj < m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(3)) {
-                m_player[objectName.split("Player").at(1).toInt()]->runSpeed.replace(3, distanceToNearestObj);
-            } else {
-                m_player[objectName.split("Player").at(1).toInt()]->runSpeed.replace(3, 0.1f);
+            if (distanceToNearestObj < m_player[playerNum]->runSpeed.at(3)) {
+                m_player[playerNum]->runSpeed.replace(3, distanceToNearestObj);
+            } else if (distanceToNearestObj > m_player[playerNum]->runSpeed.at(3)) {
+                m_player[playerNum]->runSpeed.replace(3, 0.1f);
             }
-            m_player[objectName.split("Player").at(1).toInt()]->setX0(m_player[objectName.split("Player").at(1).toInt()]->leftX0()
-                    + m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(3));
+            //а вот этот момент в будущем надо будет исправить
+            if (m_player[playerNum]->runSpeed.at(3) >= 0.1f &&
+                    !qFuzzyIsNull(m_player[playerNum]->runSpeed.at(3))) {
+                m_player[playerNum]->setX0(m_player[playerNum]->leftX0() +
+                        m_player[playerNum]->runSpeed.at(3));
+            }
+            //qDebug() << "playerSpeed Right =" << m_player[playerNum]->runSpeed.at(3);
             break;
         }
         }
-        qDebug() << "playerSpeed =" << m_player[objectName.split("Player").at(1).toInt()]->runSpeed.at(2);
     }
 }
 
