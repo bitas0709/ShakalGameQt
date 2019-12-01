@@ -6,8 +6,6 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     Dialog w;
     w.setWindowTitle("ShakalGame");
-    //w.setWindowTitle("Escape from UMNIK");
-    //w.setFixedSize(500, 500);
     w.setFixedSize(700, 700);
     w.show();
 

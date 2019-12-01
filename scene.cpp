@@ -52,6 +52,15 @@ void Scene::gameTick() {
                     }
                     emit checkCollision(MoveDirection::Right, m_player[0]->leftX0(), m_player[0]->rightX0(),
                             m_player[0]->bottomY0(), m_player[0]->topY0());
+                } else if (pressedKeys[i] == Qt::Key_Space) {
+                    if (m_player[0]->isPlayerJump) {
+                        if (m_player[0]->bottomY0() - m_player[0]->playerCoordBeforeJump < m_player[0]->playerJumpHeight) {
+                            emit checkCollision(MoveDirection::Up, m_player[0]->leftX0(), m_player[0]->rightX0(),
+                                    m_player[0]->bottomY0(), m_player[0]->topY0());
+                        } else {
+                            m_player[0]->isPlayerJump = false;
+                        }
+                    }
                 }
             }
         }
@@ -64,15 +73,13 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
     QString objectName = this->sender()->objectName();
 
     //этого тут быть не должно
-    QVector<int> tempAllObjects; //номера всех объектов рядом и по пути от существа
-    QVector<int> tempObjUnder; //временный вектор с номерами объектов под проверяемым существом
-    QVector<int> tempObjOnLevel; //временный вектор с номерами объектов на уровне существа
-    QVector<int> tempObjAbove; //временный вектор с номерами объектов выше проверяемого существа
+    QVector<int> tempAllObjects;    //номера всех объектов рядом и по пути от существа
+    QVector<int> tempObjUnder;      //временный вектор с номерами объектов под проверяемым существом
+    QVector<int> tempObjOnLevel;    //временный вектор с номерами объектов на уровне существа
+    QVector<int> tempObjAbove;      //временный вектор с номерами объектов выше проверяемого существа
+    QVector<int> tempObjUnderFoots; //вектор с номерами объектов, которые находятся прямо под ногами существа
+    QVector<int> tempObjAboveHead;  //вектор с номерами объектов, котоыре находятся прямо над головой существа
     float distanceToNearestObj = 999.0f; //расстояние до ближайшего объекта
-
-    //qDebug() << "bottomY =" << bottomY;
-    //qDebug() << "leftX =" << leftX;
-    //qDebug() << "rightX =" << rightX;
 
     int leftChunkNum = qCeil(qreal(leftX / m_map->chunkSize));
     int rightChunkNum = qCeil(qreal(rightX / m_map->chunkSize));
@@ -99,7 +106,6 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
             }
         }
     }
-    //qDebug() << "tempAllObjects =" << tempAllObjects;
     //разнесение объектов по высоте
     for (int i = 0; i < tempAllObjects.size(); i++) {
         if (m_map->ObjectData[tempAllObjects.at(i)].at(ObjStartY).toFloat() +
@@ -118,7 +124,6 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
 
     //проверка расстояния до ближайшего объекта снизу
     //составление списка объектов прямо под ногами
-    QVector<int> tempObjUnderFoots;
     for (int i = 0; i < tempObjUnder.size(); i++) {
         if (m_map->ObjectData[tempObjUnder.at(i)].at(ObjStartX).toFloat() <= m_player[0]->rightX0() &&
                 m_map->ObjectData[tempObjUnder.at(i)].at(ObjStartX).toFloat() +
@@ -127,7 +132,6 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
         }
     }
     //поиск максимально высокого объекта под ногами
-    //qDebug() << "tempObjUnderFoots =" << tempObjUnderFoots;
     float highestPointUnderFoots = 0.0f;
     for (int i = 0; i < tempObjUnderFoots.size(); i++) {
         if (m_map->ObjectData[tempObjUnderFoots.at(i)].at(ObjStartY).toFloat() +
@@ -136,7 +140,6 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
                     m_map->ObjectData[tempObjUnderFoots.at(i)].at(ObjSizeY).toFloat();
         }
     }
-    //qDebug() << "highestPointUnderFoots =" << highestPointUnderFoots;
     //окончание проверки расстояния до ближайшего объекта снизу
 
     switch(direction) {
@@ -175,8 +178,15 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
     }
     case MoveDirection::Up: {
         for (int i = 0; i < tempObjAbove.size(); i++) {
-            if (m_map->ObjectData[tempObjAbove.at(i)].at(ObjStartY).toFloat() < distanceToNearestObj) {
-                distanceToNearestObj = m_map->ObjectData[tempObjAbove.at(i)].at(ObjStartY).toFloat();
+            if (m_map->ObjectData[tempObjAbove.at(i)].at(ObjStartX).toFloat() <= m_player[0]->rightX0() &&
+                    m_map->ObjectData[tempObjAbove.at(i)].at(ObjStartX).toFloat() +
+                    m_map->ObjectData[tempObjAbove.at(i)].at(ObjSizeX).toFloat() > m_player[0]->leftX0()) {
+                tempObjAboveHead.push_back(tempObjAbove.at(i));
+            }
+        }
+        for (int i = 0; i < tempObjAboveHead.size(); i++) {
+            if (m_map->ObjectData[tempObjAboveHead.at(i)].at(ObjStartY).toFloat() - topY < distanceToNearestObj) {
+                distanceToNearestObj = m_map->ObjectData[tempObjAboveHead.at(i)].at(ObjStartY).toFloat() - topY;
             }
         }
         break;
@@ -208,8 +218,17 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
         }
         switch(direction) {
         case MoveDirection::Up: {
-            if (distanceToNearestObj < m_player[playerNum]->runSpeed.at(0)) {
+            if (qFuzzyIsNull(distanceToNearestObj) ){
+                m_player[playerNum]->isPlayerJump = false;
+            } else if (distanceToNearestObj < m_player[playerNum]->runSpeed.at(0)) {
                 m_player[playerNum]->runSpeed.replace(0, distanceToNearestObj);
+            } else if (distanceToNearestObj > m_player[playerNum]->runSpeed.at(0)) {
+                m_player[playerNum]->runSpeed.replace(0, 0.1f);
+            }
+            if (m_player[playerNum]->runSpeed.at(0) >= 0.1f &&
+                    !qFuzzyIsNull(m_player[playerNum]->runSpeed.at(0))) {
+                m_player[playerNum]->setY0(m_player[playerNum]->bottomY0() +
+                                           m_player[playerNum]->runSpeed.at(0));
             }
             break;
         }
@@ -228,8 +247,10 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
             //а вот этот момент в будущем надо будет исправить
             if (m_player[playerNum]->runSpeed.at(2) >= 0.1f &&
                     !qFuzzyIsNull(m_player[playerNum]->runSpeed.at(2))) {
-                m_player[playerNum]->setX0(m_player[playerNum]->leftX0() -
-                        m_player[playerNum]->runSpeed.at(2));
+                if (leftX > 0.0f) {
+                    m_player[playerNum]->setX0(m_player[playerNum]->leftX0() -
+                            m_player[playerNum]->runSpeed.at(2));
+                }
             }
             //qDebug() << "playerSpeed Left =" << m_player[playerNum]->runSpeed.at(2);
             break;
@@ -243,6 +264,7 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
             //а вот этот момент в будущем надо будет исправить
             if (m_player[playerNum]->runSpeed.at(3) >= 0.1f &&
                     !qFuzzyIsNull(m_player[playerNum]->runSpeed.at(3))) {
+                if (rightX < m_map->maxX)
                 m_player[playerNum]->setX0(m_player[playerNum]->leftX0() +
                         m_player[playerNum]->runSpeed.at(3));
             }
@@ -430,11 +452,11 @@ void Scene::keyPressEvent( QKeyEvent *event ) {
                 if (!m_player[0]->isPlayerJump) {
                     if (m_player[0]->isPlayerOnGround) {
                         m_player[0]->isPlayerJump = true;
+                        m_player[0]->isPlayerOnGround = false;
                         m_player[0]->playerCoordBeforeJump = m_player[0]->bottomY0();
                     }
                 }
             }
-            //emit m_player->jumpButtonPressed();
             break;
         default:
             qDebug() << event->key();
