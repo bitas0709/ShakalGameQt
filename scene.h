@@ -13,6 +13,7 @@
 #include <QtGlobal>
 
 #include "player.h"
+#include "enemy.h"
 #include "map.h"
 
 
@@ -71,9 +72,13 @@ private:
 
     int GameMode = GameModeState::Single; //убрать, когда появится мультиплеер
     Player *m_player[4];
+    Enemy *m_enemy[10];
     map *m_map;
     Object *m_object[2000];
     QOpenGLShaderProgram m_program;
+
+    QVector<int> activePlayers;
+    QVector<int> activeEnemies;
 
     int m_vertexAttr;
     int m_textureAttr;

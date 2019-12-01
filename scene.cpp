@@ -71,6 +71,8 @@ void Scene::checkCollision(MoveDirection direction, float leftX, float rightX, f
     float distanceToNearestObj = 999.0f; //расстояние до ближайшего объекта
 
     //qDebug() << "bottomY =" << bottomY;
+    //qDebug() << "leftX =" << leftX;
+    //qDebug() << "rightX =" << rightX;
 
     int leftChunkNum = qCeil(qreal(leftX / m_map->chunkSize));
     int rightChunkNum = qCeil(qreal(rightX / m_map->chunkSize));
@@ -256,6 +258,7 @@ void Scene::startGameSlot() {
     for (int i = 0; i < m_map->numObjects; i++) {
         m_object[i] = new Object( &m_program, m_vertexAttr, m_textureAttr, m_textureUniform, m_map->ObjectData[i], m_map->biome, i);
     }
+    m_enemy[0] = new Enemy( &m_program, m_vertexAttr, m_textureAttr, m_textureUniform, m_map->PlayerCoords, 0 );
     if (GameMode == GameModeState::Single) {
         m_player[0] = new Player( &m_program, m_vertexAttr, m_textureAttr, m_textureUniform, m_map->PlayerCoords, 0 );
         connect(m_player[0], SIGNAL(jumpButtonPressed(float)), m_player[0], SLOT(playerJump(float)));
@@ -347,6 +350,8 @@ void Scene::paintGL() {
         m_player[0]->draw();
     }
 
+    //m_enemy[0]->draw();
+
     m_program.release();
 }
 
@@ -366,7 +371,9 @@ void Scene::moveCamera() {
         if (m_player[0]->leftX0() >= cameraSizeX / 2 + cameraSizeX / 4 - matrixX) {
             matrixX -= step;
         } else if (m_player[0]->leftX0() <= cameraSizeX / 2 - cameraSizeX / 4 - matrixX) {
-            matrixX += step;
+            if (m_player[0]->leftX0() >= cameraSizeX / 2 - cameraSizeX / 4) {
+                matrixX += step;
+            }
         }
     }
 }
@@ -419,6 +426,14 @@ void Scene::keyPressEvent( QKeyEvent *event ) {
             break;
         case Qt::Key_Space:
             pressedKeys.push_back(Qt::Key_Space);
+            if (GameMode == GameModeState::Single) {
+                if (!m_player[0]->isPlayerJump) {
+                    if (m_player[0]->isPlayerOnGround) {
+                        m_player[0]->isPlayerJump = true;
+                        m_player[0]->playerCoordBeforeJump = m_player[0]->bottomY0();
+                    }
+                }
+            }
             //emit m_player->jumpButtonPressed();
             break;
         default:
@@ -554,7 +569,11 @@ void Scene::keyReleaseEvent( QKeyEvent *event ) {
             }
             break;
         case Qt::Key_Space:
-            //m_player->isPlayerJump = false;
+            if (GameMode == GameModeState::Single) {
+                if (m_player[0]->isPlayerJump) {
+                    m_player[0]->isPlayerJump = false;
+                }
+            }
             if (pressedKeys.size() == 1) {
                 pressedKeys.remove(0);
             } else {

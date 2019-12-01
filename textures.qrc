@@ -6,5 +6,6 @@
         <file>Textures/Mario.png</file>
         <file>Textures/NoTexture.png</file>
         <file>Textures/Tilesets/Environment.png</file>
+        <file>Textures/GothicGuy.png</file>
     </qresource>
 </RCC>

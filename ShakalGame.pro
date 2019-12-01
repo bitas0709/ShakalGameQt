@@ -25,6 +25,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        enemy.cpp \
         main.cpp \
         dialog.cpp \
         map.cpp \
@@ -34,6 +35,7 @@ SOURCES += \
 
 HEADERS += \
         dialog.h \
+        enemy.h \
         map.h \
         objects.h \
         player.h \
